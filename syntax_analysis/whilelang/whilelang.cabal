@@ -38,6 +38,7 @@ library
 executable whilelang-exe
   main-is: Main.hs
   other-modules:
+      Token
       Expr
       Paths_whilelang
   hs-source-dirs:

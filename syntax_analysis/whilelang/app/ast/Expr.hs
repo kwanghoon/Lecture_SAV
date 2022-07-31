@@ -7,14 +7,20 @@ data Const =
     CInt  Int
   | CBool Bool
   deriving Show
+
+data Type =
+    TyInt
+  | TyBool
+  deriving Show
   
 data BinOp =
     BAdd
   | BSub
   | BMul
   | BDiv
+  | BMod
   | BLessThan   -- x > y  ==> y < x 
-  | BEqual      -- x <= y ==> x < y or x = y
+  | BEqual      -- x <= y ==> x < y or x == y
   | BAnd
   | BOr
   | BNot
@@ -33,6 +39,9 @@ data Comm =
   | CSeq Comm Comm
   | CAssign VarName Expr
   | CInput VarName
+  | CIf Expr Comm Comm
   | CWhile Expr Comm
+  | CBlock [(Type,VarName)] Comm
   deriving Show
+
 
