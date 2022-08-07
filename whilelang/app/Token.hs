@@ -28,13 +28,15 @@ data Token =
 
   | TkAnd                 -- &&
   | TkOr                  -- ||
-  | TkNot                 -- ~
+  | TkNot                 -- !
 
   | TkSkip                -- skip   (keyword)
   | TkSemicolon           -- ;
   | TkAssign              -- =
-  | TkInput               -- input
+  | TkRead                -- read
   | TkIf                  -- if
+  | TkThen                -- then
+  | TkElse                -- else
   | TkWhile               -- while
   | TkOpenBrace           -- {
   | TkCloseBrace          -- }
@@ -73,13 +75,15 @@ tokenStrList =
   
   , (TkAnd, "&&")
   , (TkOr, "||")
-  , (TkNot, "~")
+  , (TkNot, "!")
   
   , (TkSkip, "skip")
   , (TkSemicolon, ";")
   , (TkAssign, "=")
-  , (TkInput, "input")
+  , (TkRead, "read")
   , (TkIf, "if")
+  , (TkThen, "then")
+  , (TkElse, "else")
   , (TkWhile, "while")
   , (TkOpenBrace, "{")
   , (TkCloseBrace, "}")
