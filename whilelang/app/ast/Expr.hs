@@ -13,24 +13,25 @@ data Type =
   | TyBool
   deriving Show
   
-data BinOp =
-    BAdd
-  | BSub
-  | BMul
-  | BDiv
-  | BMod
-  | BLessThan   -- x > y  ==> y < x 
-  | BEqual      -- x <= y ==> x < y or x == y
-  | BAnd
-  | BOr
-  | BNot
+data Op =
+    OpAdd
+  | OpSub
+  | OpMul
+  | OpDiv
+  | OpMod
+  | OpLessThan   -- x > y  ==> y < x 
+  | OpEqual      -- x <= y ==> x < y or x == y
+  | OpAnd
+  | OpOr
+  | OpNot
   deriving Show
 
 -- Expressions
 data Expr =
     ECst   Const
   | EVar   VarName
-  | EBinOp BinOp Expr Expr
+  | EBinOp Op Expr Expr
+  | EUnaryOp Op Expr
   deriving Show
 
 -- Commands
@@ -38,10 +39,31 @@ data Comm =
     CSkip
   | CSeq Comm Comm
   | CAssign VarName Expr
-  | CInput VarName
+  | CRead VarName
   | CIf Expr Comm Comm
   | CWhile Expr Comm
-  | CBlock [(Type,VarName)] Comm
   deriving Show
 
+-- Program
+data Prog = Prog Decls Comms
+  deriving Show
+
+type Decl  = (Type, VarName)
+type Decls = [ Decl ]
+
+type Comms = [ Comm ]
+
+data AST = 
+    ASTDecls { fromASTDecls :: Decls }
+  | ASTDecl  { fromASTDecl  :: Decl  }
+  | ASTComms { fromASTComms :: Comms }
+  | ASTComm  { fromASTComm  :: Comm  }
+  | ASTExpr  { fromASTExpr  :: Expr  }
+  | ASTType  { fromASTType  :: Type  }
+  | ASTProg  { fromASTProg  :: Prog  }
+  deriving Show
+
+commsToComm [] = CSkip
+commsToComm [comm] = comm
+commsToComm (comm1:comms) = CSeq comm1 (commsToComm comms)
 

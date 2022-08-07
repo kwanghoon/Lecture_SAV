@@ -2,8 +2,10 @@ module Main where
 
 import Expr
 import Lexer (lexerSpec)
+import Parser (parserSpec)
 import Terminal (terminalToString)
-import CommonParserUtil (lexing)
+import CommonParserUtil (lexing, parsing, endOfToken, aLexer)
+import TokenInterface (fromToken)
 
 import System.IO
 import System.Environment (getArgs, withArgs)
@@ -23,26 +25,27 @@ _main (fileName:args) =
 doProcess verbose fileName = do
   text <- readFile fileName
   let debugFlag = False
-  tokens <- lexing lexerSpec () text
-  mapM_ putStrLn (map terminalToString tokens)
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+  
+  putStrLn . show . fromASTProg $ astprog
 
 
--- The Lexer 
+-- The Lexer : just for printing lexical analysis results
 doLexing fileName = do
   text <- readFile fileName
   let debugFlag = False
   tokens <- lexing lexerSpec () text
   mapM_ putStrLn (map terminalToString tokens)
 
-  -- expression <-
-  --   parsing debugFlag                        -- parser converting a text-based program
-  --      parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
-  --      (aLexer lexerSpec)
-  --      (fromToken (endOfToken lexerSpec))
 
 example1 =
   CSeq
     (CAssign "x" (ECst (CInt 1)))
     (CWhile
-       (EBinOp BLessThan (EVar "x") (ECst (CInt 10)))
-       (CAssign "x" (EBinOp BAdd (EVar "x") (ECst (CInt 1)))))
+       (EBinOp OpLessThan (EVar "x") (ECst (CInt 10)))
+       (CAssign "x" (EBinOp OpAdd (EVar "x") (ECst (CInt 1)))))
