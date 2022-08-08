@@ -63,13 +63,16 @@ parserSpec = ParserSpec
         (\rhs -> return . ASTComm $ CSkip ),
       
       rule "Comm -> { Comms }"
-        (\rhs -> return . ASTComm . commsToComm . fromASTComms . get rhs $ 1 ),
+        (\rhs -> return . ASTComm . commsToComm . fromASTComms . get rhs $ 2 ),
 
       rule "Comm -> TkIdentifier = Expr"
         (\rhs -> return . ASTComm $ CAssign (getText rhs 1) (fromASTExpr . get rhs $ 3) ),
       
       rule "Comm -> read ( TkIdentifier )"
         (\rhs -> return . ASTComm . CRead . getText rhs $ 3),
+      
+      rule "Comm -> write ( TkIdentifier )"
+        (\rhs -> return . ASTComm . CWrite . getText rhs $ 3),
       
       rule "Comm -> if Expr then Comm else Comm"
         (\rhs -> return . ASTComm $ CIf
@@ -172,6 +175,11 @@ parserSpec = ParserSpec
                                      (fromASTExpr . get rhs $ 1)
                                      (fromASTExpr . get rhs $ 3) ),
 
+      rule "MultiplicativeExpr -> MultiplicativeExpr % UnaryExpr"
+        (\rhs -> return . ASTExpr $ EBinOp OpMod
+                                     (fromASTExpr . get rhs $ 1)
+                                     (fromASTExpr . get rhs $ 3) ),
+      
       rule "MultiplicativeExpr -> UnaryExpr"
         (\rhs -> return . get rhs $ 1),
 

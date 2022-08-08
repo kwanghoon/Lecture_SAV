@@ -43,10 +43,12 @@ executable whilelang-exe
       Parser
       Token
       Expr
+      Interp
       Paths_whilelang
   hs-source-dirs:
       app
       app/ast
+      app/interp
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5

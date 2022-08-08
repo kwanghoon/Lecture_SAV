@@ -34,6 +34,7 @@ data Token =
   | TkSemicolon           -- ;
   | TkAssign              -- =
   | TkRead                -- read
+  | TkWrite               -- write
   | TkIf                  -- if
   | TkThen                -- then
   | TkElse                -- else
@@ -81,6 +82,7 @@ tokenStrList =
   , (TkSemicolon, ";")
   , (TkAssign, "=")
   , (TkRead, "read")
+  , (TkWrite, "write")
   , (TkIf, "if")
   , (TkThen, "then")
   , (TkElse, "else")

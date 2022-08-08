@@ -33,6 +33,7 @@ executables:
     source-dirs:         
     - app
     - app/ast
+    - app/interp
     ghc-options:
     - -threaded
     - -rtsopts

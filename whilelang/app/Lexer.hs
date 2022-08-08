@@ -31,7 +31,7 @@ lexerSpec = LexerSpec
         ("-", mkFn TkSub),
         ("\\*", mkFn TkMul),
         ("/", mkFn TkDiv),
-        ("\\^", mkFn TkMod),
+        ("\\%", mkFn TkMod),
 
         -- TkLessThan [OK]
         -- TkGreaterThan [OK]
@@ -77,6 +77,7 @@ keywords =
 
     , ("skip",   TkSkip)
     , ("read",   TkRead)
+    , ("write",  TkWrite)
     
     , ("if",     TkIf)
     , ("then",   TkThen)

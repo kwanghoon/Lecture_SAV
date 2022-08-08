@@ -1,0 +1,31 @@
+
+''''''''''''''''''''''''''''''''''''
+' Euclidian algorithm for GCD(p,q)
+''''''''''''''''''''''''''''''''''''
+
+int t;
+int p;
+int q;
+
+read(p);
+read(q);
+
+if q <= p
+then
+  skip
+else
+  {
+    t = p;
+    p = q;
+    q = t;
+  };
+
+while p % q != 0
+  {
+    t = p % q;
+
+    p = q;
+    q = t;
+  };  
+
+write (q)
