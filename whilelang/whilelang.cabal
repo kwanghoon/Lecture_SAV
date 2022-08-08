@@ -44,6 +44,7 @@ executable whilelang-exe
       Token
       Expr
       Interp
+      WhileMonad
       Paths_whilelang
   hs-source-dirs:
       app

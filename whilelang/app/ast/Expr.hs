@@ -6,7 +6,11 @@ type VarName  = String
 data Const =
     CInt  Int
   | CBool Bool
-  deriving Show
+
+instance Show Const where
+  show (CInt n) = show n
+  show (CBool True) = "true"
+  show (CBool False) = "false"
 
 data Type =
     TyInt
@@ -46,7 +50,7 @@ data Comm =
   deriving Show
 
 -- Program
-data Prog = Prog Decls Comms
+data Prog = Prog { progDecls :: Decls, progComms :: Comms }
   deriving Show
 
 type Decl  = (Type, VarName)
