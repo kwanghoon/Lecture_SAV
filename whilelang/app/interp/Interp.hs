@@ -63,10 +63,10 @@ interpComm tyinfo env (CRead var) =
   do val <- interpRead tyinfo var
      return $ Map.insert var val env
 
-interpComm tyinfo env (CWrite var) =
-  case Map.lookup var env of
-    Nothing -> error $ "write: undefined variable: " ++ var
-    Just val -> do interpWrite val; return env
+interpComm tyinfo env (CWrite expr) =
+  do val <- interpExpr env expr
+     interpWrite val
+     return env
 
 interpComm tyinfo env (CIf expr thenComm elseComm) =
   do val <- interpExpr env expr

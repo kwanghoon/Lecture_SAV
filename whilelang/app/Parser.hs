@@ -71,8 +71,8 @@ parserSpec = ParserSpec
       rule "Comm -> read ( TkIdentifier )"
         (\rhs -> return . ASTComm . CRead . getText rhs $ 3),
       
-      rule "Comm -> write ( TkIdentifier )"
-        (\rhs -> return . ASTComm . CWrite . getText rhs $ 3),
+      rule "Comm -> write ( Expr )"
+        (\rhs -> return . ASTComm . CWrite . fromASTExpr . get rhs $ 3),
       
       rule "Comm -> if Expr then Comm else Comm"
         (\rhs -> return . ASTComm $ CIf

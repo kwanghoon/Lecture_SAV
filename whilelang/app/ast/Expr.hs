@@ -44,7 +44,7 @@ data Comm =
   | CSeq Comm Comm
   | CAssign VarName Expr
   | CRead VarName
-  | CWrite VarName
+  | CWrite Expr
   | CIf Expr Comm Comm
   | CWhile Expr Comm
   deriving Show

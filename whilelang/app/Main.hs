@@ -8,6 +8,7 @@ import CommonParserUtil (lexing, parsing, endOfToken, aLexer)
 import TokenInterface (fromToken)
 import WhileMonad
 import Interp (interp)
+import Typecheck (typecheck)
 import Data.Char (isDigit)
 import System.IO
 import System.Environment (getArgs, withArgs)
@@ -37,6 +38,8 @@ doProcess verbose fileName = do
   let prog = fromASTProg astprog
   
   putStrLn . show $ prog
+
+  typecheck prog
 
   interp prog
 
