@@ -21,11 +21,11 @@ main =
 _main [] = return ()
 _main (fileName:args) = 
   case fileName of
-    _ -> do _ <- doProcess True fileName
+    _ -> do _ <- doRun True fileName
             _main args
 
 
-doProcess verbose fileName = do
+doRun verbose fileName = do
   text <- readFile fileName
   let debugFlag = False
 
@@ -50,6 +50,21 @@ doLexing fileName = do
   let debugFlag = False
   tokens <- lexing lexerSpec () text
   mapM_ putStrLn (map terminalToString tokens)
+
+-- The parser
+doParsing fileName = do
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  
+  putStrLn . show $ prog
 
 
 example1 =
