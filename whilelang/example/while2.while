@@ -10,7 +10,7 @@ int q;
 read(p);
 read(q);
 
-if q <= p
+if (q <= p)
 then
   skip
 else
@@ -20,7 +20,7 @@ else
     q = t;
   };
 
-while p % q != 0
+while (p % q != 0)
   {
     t = p % q;
 
