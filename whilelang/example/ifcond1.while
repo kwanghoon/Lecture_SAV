@@ -1,6 +1,7 @@
 
 
 int x;
+int y;
 int r;
 
 read(x);
