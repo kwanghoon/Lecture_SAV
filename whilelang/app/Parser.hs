@@ -196,7 +196,12 @@ parserSpec = ParserSpec
         (\rhs -> return . ASTExpr . ECst . CInt . read . getText rhs $ 1),
 
       rule "Primary -> TkCBool"
-        (\rhs -> return . ASTExpr . ECst . CBool . read . getText rhs $ 1),
+        (\rhs -> let bool_lit = case getText rhs $ 1 of
+	                          "true"  -> "True"
+	                          "false" -> "False"
+				  x       -> x
+				  
+	         in  return . ASTExpr . ECst . CBool . read $ bool_lit),
 
       rule "Primary -> TkIdentifier"
         (\rhs -> return . ASTExpr . EVar . getText rhs $ 1),

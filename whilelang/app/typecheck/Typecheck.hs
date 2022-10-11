@@ -128,6 +128,8 @@ equalType TyInt TyInt = True
 
 equalType TyBool TyBool = True
 
+equalType ty1 ty2 = error $ show ty1 ++ " is not equal to " ++ show ty2
+
 --
 retEqual :: Type -> Type -> Type
 
