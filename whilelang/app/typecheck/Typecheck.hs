@@ -19,7 +19,7 @@ tcConst (CBool b) = return TyBool
 
 
 --
-tcExpr :: TyEnv -> Expr -> IO Type
+tcExpr :: TyEnv -> Expr -> IO Type    -- TyEnv |- Expr : Type 
 
 tcExpr tyenv (ECst cst) = tcConst cst
 
@@ -56,7 +56,7 @@ tcExpr tyenv (EUnaryOp OpNot expr1) =
        TyBool -> return TyBool
 
 --
-tcComm :: TyEnv -> Comm -> IO TyEnv
+tcComm :: TyEnv -> Comm -> IO TyEnv   -- TyEnv |- Comm 
 
 tcComm tyenv CSkip = return tyenv
 

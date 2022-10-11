@@ -25,6 +25,22 @@ _main (fileName:args) =
             _main args
 
 
+doTypecheck verbose fileName = do
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  
+  putStrLn . show $ prog
+
+  typecheck prog
+  
 doRun verbose fileName = do
   text <- readFile fileName
   let debugFlag = False
