@@ -1,0 +1,7 @@
+
+
+int x;
+
+x = 123;
+
+if x then skip else skip
