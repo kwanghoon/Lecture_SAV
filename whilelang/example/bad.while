@@ -3,8 +3,3 @@
 int x;
 
 x = true;
-
-if x > 0 then skip else skip
-
-
-

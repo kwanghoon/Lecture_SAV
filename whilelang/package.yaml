@@ -35,6 +35,7 @@ executables:
     - app/ast
     - app/interp
     - app/typecheck
+    - app/dataflow
     ghc-options:
     - -threaded
     - -rtsopts

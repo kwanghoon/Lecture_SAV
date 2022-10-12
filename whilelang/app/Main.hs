@@ -9,6 +9,7 @@ import TokenInterface (fromToken)
 import WhileMonad
 import Interp (interp)
 import Typecheck (typecheck)
+import Dataflow (dataflow)
 import Data.Char (isDigit)
 import System.IO
 import System.Environment (getArgs, withArgs)
@@ -25,22 +26,6 @@ _main (fileName:args) =
             _main args
 
 
-doTypecheck verbose fileName = do
-  text <- readFile fileName
-  let debugFlag = False
-
-  astprog <-
-    parsing debugFlag                        -- parser converting a text-based program
-       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
-       (aLexer lexerSpec)
-       (fromToken (endOfToken lexerSpec))
-
-  let prog = fromASTProg astprog
-  
-  putStrLn . show $ prog
-
-  typecheck prog
-  
 doRun verbose fileName = do
   text <- readFile fileName
   let debugFlag = False
@@ -81,6 +66,46 @@ doParsing fileName = do
   let prog = fromASTProg astprog
   
   putStrLn . show $ prog
+
+-- The type checker
+doTypecheck fileName = do
+  let verbose = False
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  
+  putStrLn . show $ prog
+
+  typecheck prog
+  
+-- The data flow analyzer
+doAnalysis fileName = do 
+  let verbose = False
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  
+  putStrLn . show $ prog
+
+  typecheck prog
+
+  labeledprog <- dataflow prog
+  putStrLn . show $ labeledprog
+  
 
 
 example1 =

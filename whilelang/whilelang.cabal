@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -46,12 +46,14 @@ executable whilelang-exe
       Interp
       WhileMonad
       Typecheck
+      Dataflow
       Paths_whilelang
   hs-source-dirs:
       app
       app/ast
       app/interp
       app/typecheck
+      app/dataflow
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
