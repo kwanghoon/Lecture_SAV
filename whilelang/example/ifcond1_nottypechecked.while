@@ -1,0 +1,18 @@
+
+
+int x;
+int y;
+int r;
+
+read(x);
+
+y = 10;
+
+if x
+then 
+  r = y / x
+else
+  skip
+
+
+
