@@ -9,7 +9,7 @@ import TokenInterface (fromToken)
 import WhileMonad
 import Interp (interp)
 import Typecheck (typecheck)
-import Dataflow (dataflow)
+import Dataflow (dataflow, printLabeledComm)
 import Data.Char (isDigit)
 import System.IO
 import System.Environment (getArgs, withArgs)
@@ -103,8 +103,11 @@ doAnalysis fileName = do
 
   typecheck prog
 
-  labeledprog <- dataflow prog
-  putStrLn . show $ labeledprog
+  labeledprog <- dataflow True prog
+  
+  return ()
+  
+  -- putStrLn . show $ labeledprog
   
 
 
