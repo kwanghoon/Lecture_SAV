@@ -86,7 +86,8 @@ dataflow verbose prog =
     revEdgeMap       = revCfg edges
     revEdges         = Map.toList revEdgeMap
 
-    vertexSet        = foldl (\set elem -> Set.insert elem set) Set.empty (Prelude.map fst edges)
+    vertexSet        = foldl (\set elem -> Set.insert elem set)
+                         Set.empty (Prelude.map fst edges ++ Prelude.map snd edges)
     vertices         = Set.toList vertexSet
 
     equEntries       = entries revEdges
@@ -95,7 +96,7 @@ dataflow verbose prog =
     solution         = solve (equEntries ++ equExits)
     solList          = Map.toList solution
 
-    prSetVarSet (setVar, set) = show setVar ++ " = " ++ show set
+    prSetVarSet (setVar, set) = show setVar ++ " = " ++ show (Set.toList set)
     
     decls = progDecls prog
     comms = progComms prog
@@ -200,7 +201,8 @@ cfg labelMap n graph =
                   (sn1, ens1, graph1) = cfg labelMap nThen graph0
                   (sn2, ens2, graph2) = cfg labelMap nElse graph1
         LCWhile expr nBody ->
-          (n, n:ens1, Set.insert (n,sn1) graph1)
+          (n, [n], foldl (\set elem -> Set.insert (elem,n) set)
+                      ( Set.insert (n,sn1) graph1) ens1 )
             where (sn1, ens1, graph1) = cfg labelMap nBody graph
 
 -- Numbering statements
