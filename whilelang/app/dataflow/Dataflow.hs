@@ -19,6 +19,7 @@ data LabeledComm =
   | LCWrite  Expr
   | LCIf     Expr Label Label
   | LCWhile  Expr Label
+  | LCAssert Expr
   deriving Show
 
 
@@ -130,6 +131,7 @@ exits vertices labeledStmts = map gen vertices
     rhs n (LCWrite v) = Entry n
     rhs n (LCIf expr l1 l2) = Entry n
     rhs n (LCWhile expr l) = Entry n
+    rhs n (LCAssert expr) = Entry n
 
 solve equations = repUntilNoChange initSol equations
   where
@@ -204,6 +206,7 @@ cfg labelMap n graph =
           (n, [n], foldl (\set elem -> Set.insert (elem,n) set)
                       ( Set.insert (n,sn1) graph1) ens1 )
             where (sn1, ens1, graph1) = cfg labelMap nBody graph
+        LCAssert expr -> (n, [n], graph)
 
 -- Numbering statements
 numberingProg map entry []           = (entry, map)
@@ -242,3 +245,6 @@ numbering entry (CIf expr comm1 comm2) map =
 numbering entry (CWhile expr comm) map =
   let (exit, map1) = numbering entry comm map
   in  (exit + 1, Map.insert (exit + 1) (LCWhile expr exit) map1)
+
+numbering entry (CAssert expr) map =
+  (entry, Map.insert entry (LCAssert expr) map)

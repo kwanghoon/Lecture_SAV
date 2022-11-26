@@ -34,6 +34,7 @@ library
       base >=4.7 && <5
     , containers
     , yapb >=0.2.6
+    , z3 >=408.2
   default-language: Haskell2010
 
 executable whilelang-exe
@@ -42,11 +43,13 @@ executable whilelang-exe
       Lexer
       Parser
       Token
+      Util
       Expr
       Interp
       WhileMonad
       Typecheck
       Dataflow
+      SymExec
       Paths_whilelang
   hs-source-dirs:
       app
@@ -54,25 +57,45 @@ executable whilelang-exe
       app/interp
       app/typecheck
       app/dataflow
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+      app/symexec
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -dynamic
   build-depends:
       base >=4.7 && <5
     , containers
     , whilelang
     , yapb >=0.2.6
+    , z3 >=408.2
   default-language: Haskell2010
 
 test-suite whilelang-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Lexer
+      Main
+      Parser
+      Token
+      Util
+      Expr
+      Interp
+      WhileMonad
+      Typecheck
+      Dataflow
+      SymExec
       Paths_whilelang
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+      app
+      app/ast
+      app/interp
+      app/typecheck
+      app/dataflow
+      app/symexec
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -dynamic
   build-depends:
       base >=4.7 && <5
     , containers
     , whilelang
     , yapb >=0.2.6
+    , z3 >=408.2
   default-language: Haskell2010

@@ -83,4 +83,6 @@ keywords =
     , ("then",   TkThen)
     , ("else",   TkElse)
     , ("while",  TkWhile)
+    
+    , ("assert",  TkAssert)
     ]

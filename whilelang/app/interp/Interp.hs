@@ -83,6 +83,12 @@ interpComm tyinfo env (CWhile expr comm) =
        CBool False -> return env
        _           -> error $ "if condition: not boolean: " ++ show val
 
+interpComm tyinfo env (CAssert expr) =
+  do val <- interpExpr env expr
+     case val of
+       CBool True  -> return env
+       CBool False -> error $ "assertion failure:\n\t" ++ show expr ++ "\n\t" ++ show env
+
 --
 interpRead :: WhileMonad m => TyInfo -> VarName -> m Const
 interpRead tyinfo var =

@@ -85,6 +85,10 @@ parserSpec = ParserSpec
                                       (fromASTExpr . get rhs $ 2)
                                       (fromASTComm . get rhs $ 3) ),
       
+      rule "Comm -> assert Expr"
+        (\rhs -> return . ASTComm $ CAssert
+                                      (fromASTExpr . get rhs $ 2) ),
+
       rule "Expr -> OrExpr"
         (\rhs -> return . get rhs $ 1),
 

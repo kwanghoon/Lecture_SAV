@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - yapb >= 0.2.6
 - containers
+- z3 >= 408.2
 
 library:
   source-dirs: src
@@ -36,20 +37,30 @@ executables:
     - app/interp
     - app/typecheck
     - app/dataflow
+    - app/symexec
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -dynamic
     dependencies:
     - whilelang
 
 tests:
   whilelang-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:
+    - test
+    - app
+    - app/ast
+    - app/interp
+    - app/typecheck
+    - app/dataflow
+    - app/symexec
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -dynamic
     dependencies:
     - whilelang

@@ -1,0 +1,25 @@
+int a;
+int b;
+int x;
+int y;
+
+read(a);
+read(b);
+
+x = 1;
+y = 0;
+
+if !(a == 0) then
+{
+  y = 3 + x;
+  if b == 0 then
+  {
+    x = 2 * (a + b)
+  }
+  else
+    skip
+}
+else
+  skip;
+
+assert !(x-y == 0)

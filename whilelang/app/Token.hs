@@ -43,6 +43,8 @@ data Token =
   | TkCloseBrace          -- }
   | TkOpenParen           -- (
   | TkCloseParen          -- )
+  
+  | TkAssert              -- assert
   deriving (Eq,Show)
 
 
@@ -91,6 +93,8 @@ tokenStrList =
   , (TkCloseBrace, "}")
   , (TkOpenParen, "(")
   , (TkCloseParen, ")")
+  
+  , (TkAssert, "assert")
   ]
 
 findTok tok [] = Nothing

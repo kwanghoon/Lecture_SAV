@@ -47,6 +47,7 @@ data Comm =
   | CWrite Expr
   | CIf Expr Comm Comm
   | CWhile Expr Comm
+  | CAssert Expr
   deriving Show
 
 -- Program

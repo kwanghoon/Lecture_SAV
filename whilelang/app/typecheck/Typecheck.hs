@@ -95,8 +95,6 @@ tcComm tyenv comm@(CIf condExpr comm1 comm2) =
 
        _ -> error $ "[tcComm] Condtion has type " ++ show ty ++ " in " ++ show comm
 
-  where
-
 tcComm tyenv comm@(CWhile condExpr comm1) =
   do ty <- tcExpr tyenv condExpr
      case ty of
@@ -106,6 +104,13 @@ tcComm tyenv comm@(CWhile condExpr comm1) =
             
        _ -> error $ "[tcComm] Condition has type " ++ show ty ++ " in " ++ show comm
 
+tcComm tyenv comm@(CAssert condExpr) =
+  do ty <- tcExpr tyenv condExpr
+     case ty of
+       TyBool ->
+         do return tyenv
+
+       _ -> error $ "[tcComm] Condtion has type " ++ show ty ++ " in " ++ show comm
 
 --
 tcProg :: Prog -> IO ()
