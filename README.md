@@ -1,10 +1,11 @@
-## [강의] 소프트웨어 분석 및 검증
+## [강의] 프로그램 분석 기법
 
 
 ### 소개
  - 프로그래밍언어 WHILE을 가지고 프로그램 분석 기법을 하향식으로 소개하는 강의 자료.
  - 각 분석 기법을 이해하고 사용하는 방법에 중점 (분석 기법을 구현하는 방법이 아닌)
- - 구문분석에서 동적 의미, 타입체킹, 정적 분석, 기호 실행까지 설명하는 강의 발표자료와 Haskell 프로그램으로 구성되어 있음.
+ - 구문분석에서 동적 의미, 타입체킹, 정적 분석, 기호 실행까지 설명하는 강의 발표자료
+ - WHILE 언어에 대한 각 기법을 Haskell 프로그램으로 구현
  - 추가로 각 분석 기법을 활용한 오픈소스 소프트웨어를 소개.
 
 ### 목차
@@ -12,7 +13,7 @@
 
   * [WHILE 프로그래밍언어](https://github.com/kwanghoon/Lecture_SAV/tree/master/whilelang/example)
 
-- [구문분석](https://docs.google.com/presentation/d/1_JrGo2I4U-_bO2nN5QLKZpfpicCBDcjs693UaWocQ3E/edit?usp=sharing)|
+- [구문분석](https://docs.google.com/presentation/d/1_JrGo2I4U-_bO2nN5QLKZpfpicCBDcjs693UaWocQ3E/edit?usp=sharing)
 
   * WHILE
     - [Lexer](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/Lexer.hs)
@@ -43,5 +44,5 @@
      - [Klee](http://klee.github.io/)
 
 
-### 만든 사람
+### 만든이
  - 전남대학교 소프트웨어공학과 최광훈 
