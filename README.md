@@ -50,8 +50,7 @@
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
- $ cd Lecture_SAV
- $ cd whilelang
+ $ cd Lecture_SAV/whilelang
  $ stack ghci
  ghic> let srcFile = "./example/while2.while"
  ghci> doLexing srcFile
@@ -60,7 +59,7 @@
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
  ghci> doSymbolic srcFile
-
+```
 
 ### 오픈소스 소프트웨어 도구 설치 및 실행 방법
 
