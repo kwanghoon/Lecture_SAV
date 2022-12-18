@@ -14,7 +14,8 @@ import SymExec
 
 import Data.Char (isDigit)
 
-doRun verbose fileName = do
+doRun fileName = do
+  let verbose = False
   text <- readFile fileName
   let debugFlag = False
 

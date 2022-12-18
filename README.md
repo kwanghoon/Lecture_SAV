@@ -43,6 +43,28 @@
   * 오픈소스 소프트웨어
      - [Klee](http://klee.github.io/)
 
+### WHILE 데모 프로그램 설치 및 실행 방법
+
+- [하스켈 stack 설치](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
+- [구문 분석에서 기호 실행까지 분석 실행 방법]
+
+```
+ $ git clone https://github.com/kwanghoon/Lecture_SAV
+ $ cd Lecture_SAV
+ $ cd whilelang
+ $ stack ghci
+ ghic> let srcFile = "./example/while2.while"
+ ghci> doLexing srcFile
+ ghci> doParsing srcFile
+ ghci> doRun srcFile
+ ghci> doTypecheck srcFile
+ ghci> doAnalysis srcFile
+ ghci> doSymbolic srcFile
+
+
+### 오픈소스 소프트웨어 도구 설치 및 실행 방법
+
+- 각 해당 발표 자료 참고
 
 ### 만든이
  - 전남대학교 소프트웨어공학과 최광훈 

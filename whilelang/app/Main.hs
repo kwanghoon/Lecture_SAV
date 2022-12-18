@@ -17,7 +17,7 @@ main =
 _main [] = return ()
 _main (fileName:args) = 
   case fileName of
-    _ -> do _ <- doRun True fileName
+    _ -> do _ <- doRun {- True -} fileName
             _main args
 
 example1 =
