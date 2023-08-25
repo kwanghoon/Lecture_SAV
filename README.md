@@ -47,11 +47,12 @@
 
 - [하스켈 stack 설치](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
 - [구문 분석에서 기호 실행까지 분석 실행 방법]
+- (리눅스 우분투에서 빌드 - 윈도우즈의 경우 Z3 의존성 문제)
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
  $ cd Lecture_SAV/whilelang
- $ stack ghci
+ $ stack ghci --
  ghic> let srcFile = "./example/while2.while"
  ghci> doLexing srcFile
  ghci> doParsing srcFile
