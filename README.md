@@ -60,6 +60,10 @@
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
  ghci> doSymbolic srcFile
+```
+
+- WHILE 프로그램을 Json 형식으로 출력
+```
  ghci> outputJson srcFile
 ```
 
