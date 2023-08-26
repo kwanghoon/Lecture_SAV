@@ -60,6 +60,7 @@
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
  ghci> doSymbolic srcFile
+ ghci> outputJson srcFile
 ```
 
 ### 오픈소스 소프트웨어 도구 설치 및 실행 방법
