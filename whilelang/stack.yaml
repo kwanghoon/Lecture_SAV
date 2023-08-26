@@ -44,6 +44,7 @@ packages:
 extra-deps:
  - yapb-0.2.6
  - z3-408.2
+ - prettyprinter-1.7.0@sha256:6a9569e21fa61163a7f066d23d701e23e917893e8f39733d6e617ec72787ae5f,6007
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

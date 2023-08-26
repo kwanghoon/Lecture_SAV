@@ -56,6 +56,21 @@ doParsing fileName = do
   
   putStrLn . show $ prog
 
+-- The parser
+outputJson fileName = do
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  
+  prJsonFromExpr prog
+
 -- The type checker
 doTypecheck fileName = do
   let verbose = False
