@@ -47,6 +47,7 @@
 
 - [하스켈 stack 설치](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
 - [구문 분석에서 기호 실행까지 분석 실행 방법]
+- (Z3를 사전에 설치)
 - (리눅스 우분투에서 빌드 - 윈도우즈의 경우 Z3 의존성 문제)
 
 ```
@@ -73,11 +74,7 @@
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
  ghci> doSymbolic srcFile
-```
-
-- WHILE 프로그램을 Json 형식으로 출력
-```
- ghci> outputJson srcFile
+ ghci> doJson srcFile
 ```
 
 ### 오픈소스 소프트웨어 도구 설치 및 실행 방법
