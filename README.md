@@ -49,6 +49,10 @@
 - [구문 분석에서 기호 실행까지 분석 실행 방법]
 - (Z3를 사전에 설치)
 - (리눅스 우분투에서 빌드 - 윈도우즈의 경우 Z3 의존성 문제)
+- 윈도우즈 Z3 설치 방법
+    * [z3-4.8.12 버전](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.12)을 다운로드
+    * D:\work\lang\z3\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정하고,
+       * stack build --extra-include-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\include --extra-lib-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\bin 
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
