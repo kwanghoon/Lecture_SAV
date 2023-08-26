@@ -23,12 +23,12 @@ type VarName  = String
 data Const =
     CInt  Int
   | CBool Bool
-  deriving (Generic)
+  deriving (Show, Generic)
 
-instance Show Const where
-  show (CInt n) = show n
-  show (CBool True) = "true"
-  show (CBool False) = "false"
+-- instance Show Const where
+--   show (CInt n) = show n
+--   show (CBool True) = "true"
+--   show (CBool False) = "false"
 
 instance ToJSON Const where
   toJSON (CInt n) = object [fromString "CInt" .= n]
@@ -38,11 +38,11 @@ instance ToJSON Const where
 data Type =
     TyInt
   | TyBool
-  deriving (Generic)
+  deriving (Show, Generic)
 
-instance Show Type where
-  show TyInt = "int"
-  show TyBool = "bool"
+-- instance Show Type where
+--   show TyInt = "int"
+--   show TyBool = "bool"
 
 instance ToJSON Type where
   toJSON TyInt = object [fromString "TyInt" .= ()]
@@ -60,19 +60,19 @@ data Op =
   | OpAnd
   | OpOr
   | OpNot
-  deriving (Generic)
+  deriving (Show, Generic)
 
-instance Show Op where
-  show OpAdd = "+"
-  show OpSub = "-"
-  show OpMul = "*"
-  show OpDiv = "/"
-  show OpMod = "%"
-  show OpLessThan = "<"
-  show OpEqual = "=="
-  show OpAnd = "&&"
-  show OpOr = "||"
-  show OpNot = "!"
+-- instance Show Op where
+--   show OpAdd = "+"
+--   show OpSub = "-"
+--   show OpMul = "*"
+--   show OpDiv = "/"
+--   show OpMod = "%"
+--   show OpLessThan = "<"
+--   show OpEqual = "=="
+--   show OpAnd = "&&"
+--   show OpOr = "||"
+--   show OpNot = "!"
 
 instance ToJSON Op where
   toJSON OpAdd = object [fromString "OpAdd" .= ()]

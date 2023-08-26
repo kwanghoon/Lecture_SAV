@@ -57,6 +57,8 @@ doParsing fileName = do
   putStrLn . show $ prog
 
 -- The parser
+doJson fileName = outputJson fileName
+
 outputJson fileName = do
   text <- readFile fileName
   let debugFlag = False

@@ -52,6 +52,19 @@
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
  $ cd Lecture_SAV/whilelang
+ $ stack build
+ $ stack exec -- whilelang-exe --lex ./example/while2.while
+ $ stack exec -- whilelang-exe --parse ./example/while2.while
+ $ stack exec -- whilelang-exe --typecheck ./example/while2.while
+ $ stack exec -- whilelang-exe --dataflow ./example/while2.while
+ $ stack exec -- whilelang-exe --symexec ./example/while2.while
+ $ stack exec -- whilelang-exe --json ./example/while2.while
+```
+
+- GHCi 안에서 동일한 명령어를 실행
+```
+ $ git clone https://github.com/kwanghoon/Lecture_SAV
+ $ cd Lecture_SAV/whilelang
  $ stack ghci --
  ghic> let srcFile = "./example/while2.while"
  ghci> doLexing srcFile
