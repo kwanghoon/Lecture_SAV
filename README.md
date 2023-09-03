@@ -35,6 +35,7 @@
      - [자료흐름분석 - Reaching Definition](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/dataflow/Dataflow.hs)
   * 오픈소스 소프트웨어
      - [FBInfer](https://fbinfer.com)
+     - [CodeQL](https://codeql.github.com/docs/)
 
 - [기호 실행](https://docs.google.com/presentation/d/1_Z9-xdhx04eDvcfdLUW8Jj8_2WS9t5YJS9AO8jYdLYo/edit?usp=sharing)
 
