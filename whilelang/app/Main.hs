@@ -12,13 +12,31 @@ import System.Environment (getArgs, withArgs)
 main :: IO ()
 main =
  do args <- getArgs
-    _main args
+    _main doRun args
 
-_main [] = return ()
-_main (fileName:args) = 
-  case fileName of
-    _ -> do _ <- doRun {- True -} fileName
-            _main args
+_main f [] = return ()
+_main f (arg:args) =
+  if length arg >= 2 && take 2 arg == "--" then
+    changeFun f arg args
+  else
+    let fileName = arg in 
+      do _ <- f {- True -} fileName
+         _main f args
+
+changeFun f arg args = 
+ case [ newF | (opt, newF) <- cmdList, opt == arg ] of
+   [] -> _main f args
+   (newF:_) -> _main newF args
+
+cmdList =
+ [
+   ("--lex", doLexing),
+   ("--parse", doParsing),
+   ("--typecheck", doTypecheck),
+   ("--dataflow", doAnalysis),
+   ("--symexec", doSymbolic),
+   ("--json", doJson)
+ ]
 
 example1 =
   Prog

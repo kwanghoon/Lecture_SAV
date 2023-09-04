@@ -20,6 +20,7 @@
     - [Parser](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/Parser.hs)
   * 오픈소스 소프트웨어
     - [PMD](https://pmd.github.io/), [SonarQube](https://www.sonarqube.org/)
+    - [tree-sitter](https://tree-sitter.github.io/tree-sitter/)
   
 - [의미 분석 - 동적 시맨틱스와 타입 체킹](https://docs.google.com/presentation/d/1Qd_yBSS9QXrNDe2xmJK3hseoTPZ8_DxPMMlusFb8PiA/edit?usp=sharing)
 
@@ -35,6 +36,7 @@
      - [자료흐름분석 - Reaching Definition](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/dataflow/Dataflow.hs)
   * 오픈소스 소프트웨어
      - [FBInfer](https://fbinfer.com)
+     - [CodeQL](https://codeql.github.com/docs/)
 
 - [기호 실행](https://docs.google.com/presentation/d/1_Z9-xdhx04eDvcfdLUW8Jj8_2WS9t5YJS9AO8jYdLYo/edit?usp=sharing)
 
@@ -47,11 +49,30 @@
 
 - [하스켈 stack 설치](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
 - [구문 분석에서 기호 실행까지 분석 실행 방법]
+- (Z3를 사전에 설치)
+- (리눅스 우분투에서 빌드 - 윈도우즈의 경우 Z3 의존성 문제)
+- 윈도우즈 Z3 설치 방법
+    * [z3-4.8.12 버전](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.12)을 다운로드
+    * D:\work\lang\z3\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정하고,
+       * stack build --extra-include-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\include --extra-lib-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\bin 
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
  $ cd Lecture_SAV/whilelang
- $ stack ghci
+ $ stack build
+ $ stack exec -- whilelang-exe --lex ./example/while2.while
+ $ stack exec -- whilelang-exe --parse ./example/while2.while
+ $ stack exec -- whilelang-exe --typecheck ./example/while2.while
+ $ stack exec -- whilelang-exe --dataflow ./example/while2.while
+ $ stack exec -- whilelang-exe --symexec ./example/while2.while
+ $ stack exec -- whilelang-exe --json ./example/while2.while
+```
+
+- GHCi 안에서 동일한 명령어를 실행
+```
+ $ git clone https://github.com/kwanghoon/Lecture_SAV
+ $ cd Lecture_SAV/whilelang
+ $ stack ghci --
  ghic> let srcFile = "./example/while2.while"
  ghci> doLexing srcFile
  ghci> doParsing srcFile
@@ -59,6 +80,7 @@
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
  ghci> doSymbolic srcFile
+ ghci> doJson srcFile
 ```
 
 ### 오픈소스 소프트웨어 도구 설치 및 실행 방법
