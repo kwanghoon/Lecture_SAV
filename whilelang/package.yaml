@@ -42,14 +42,13 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -dynamic
     dependencies:
     - whilelang
 
 tests:
   whilelang-test:
-    main:                Spec.hs
-    source-dirs:
+    main:        Spec.hs
+    source-dirs: 
     - test
     - app
     - app/ast
@@ -61,6 +60,6 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -dynamic
     dependencies:
     - whilelang
+
