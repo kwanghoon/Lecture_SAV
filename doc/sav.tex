@@ -110,6 +110,95 @@
 작성함으로써 각 분석 방법을 주체적으로 이해하는 방법을 권한다. 이 강의
 노트에서는 파이썬을 선택하여 설명한다. 
 
+강의 노트에서 사용하는 하스켈 프로그램의 내용은 다음과 같다.
+
+\begin{itemize}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/tree/master/whilelang/example}{WHILE 프로그래밍 언어 예제 프로그램}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/Lexer.hs}{어휘 분석(lexical analyzier)}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/Parser.hs}{구문 구조 분석(Parser)}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/interp/Interp.hs}{동적 의미(semantics)}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/typecheck/Typecheck.hs}{정적 의미-타입체킹}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/dataflow/Dataflow.hs}{정적 분석-자료 흐름 분석}
+\item \href{https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/symexec/SymExec.hs}{기호 실행}
+\end{itemize}
+
+이 프로그램을 \href{https://github.com/kwanghoon/Lecture_SAV}{깃허브
+  저장소}에서 내려 받고,
+%
+빌드한다.
+
+기본적으로
+\href{https://docs.haskellstack.org/en/stable/install_and_upgrade/}{하스켈
+  빌드 시스템 도구 스택(stack)}을 설치해야 한다.
+%
+추가로 기호 실행 분석에서 사용하는 산술 복합 논리식을 해결하는 풀이
+엔진 (SMT -Satisfiability Module Theories - solver) Z3 라이브러리가
+필요하다.
+
+\begin{itemize}
+\item 리눅스
+\begin{verbatim}
+$ sudo apt-get install libz3-dev
+$ git clone https://github.com/kwanghoon/Lecture_SAV
+$ cd Lecture_SAV/whilelang
+$ stack build
+\end{verbatim}
+\item 윈도우즈
+  \begin{itemize}
+  \item \href{https://github.com/Z3Prover/z3/releases/tag/z3-4.8.12}{z3-4.8.12 버전}을 내려받기
+  \item 
+  \begin{verbatim}
+  (D:\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정)
+    D:\> git clone https://github.com/kwanghoon/Lecture_SAV
+    D:\> cd Lecture_SAV/whilelang
+    D:\> stack build 
+           --extra-include-dirs=D:\z3-4.8.12-x64-win\include
+           --extra-lib-dirs=D:\z3-4.8.12-x64-win\bin
+  \end{verbatim}
+  \end{itemize}
+\end{itemize}
+
+하스켈 프로그램을 빌드한 다음 어휘 분석부터 기호 실행까지 실행하는
+방법은 다음과 같다. 실행 파일을 통해 각 분석 방법을 다음과 같이 실행할
+수 있다.
+
+\begin{verbatim}
+$ stack exec -- whilelang-exe --lex ./example/while2.while
+$ stack exec -- whilelang-exe --parse ./example/while2.while
+$ stack exec -- whilelang-exe --typecheck ./example/while2.while
+$ stack exec -- whilelang-exe --dataflow ./example/while2.while
+$ stack exec -- whilelang-exe --symexec ./example/while2.while
+\end{verbatim}
+
+하스켈 프로그램을 read-eval-print 방식으로 실행할 수도 있다. 
+
+\begin{verbatim}
+$ stack ghci --
+ghic> let srcFile = "./example/while2.while"
+ghci> doLexing srcFile
+ghci> doParsing srcFile
+ghci> doRun srcFile
+ghci> doTypecheck srcFile
+ghci> doAnalysis srcFile
+ghci> doSymbolic srcFile
+\end{verbatim}
+
+WHILE 프로그램을 하스켈 어휘 분석과 구문 구조 분석 결과로 얻은 추상
+구문 트리(AST, Abstract Syntax Tree)를 다른 프로그래밍언어에서
+사용하기 위해서 이 트리를 JSON 형식으로 출력하는 방법을 제공한다.
+
+\begin{verbatim}
+$ stack exec -- whilelang-exe --json ./example/while2.while
+\end{verbatim}
+
+\begin{verbatim}
+$ stack ghci --
+ghic> let srcFile = "./example/while2.while"
+ghci> doJson srcFile
+\end{verbatim}
+
+파이썬 프로그램에서 이 JSON 형식의 분석 내용을 읽어서 원하는 분석을
+진행할 수 있다.
 
 
 \chapter{구문 분석}
