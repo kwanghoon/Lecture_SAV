@@ -49,13 +49,13 @@
 
 - [하스켈 stack 설치](https://docs.haskellstack.org/en/stable/install_and_upgrade/)
 - [구문 분석에서 기호 실행까지 분석 실행 방법]
-- Z3 개발자를 설치
-  * 리눅스에서 Z3 설치 방법
+- Z3 개발자 라이브러리를 설치
+  * (우분투) 리눅스
     * sudo apt-get install libz3-dev
-  * 윈도우즈 Z3 설치 방법
+  * 윈도우즈 
     * [z3-4.8.12 버전](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.12)을 다운로드
-    * D:\work\lang\z3\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정하고,
-       * stack build --extra-include-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\include --extra-lib-dirs=D:\work\lang\z3\z3-4.8.12-x64-win\bin 
+    * D:\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정하고,
+       * stack build --extra-include-dirs=D:\z3-4.8.12-x64-win\include --extra-lib-dirs=D:\z3-4.8.12-x64-win\bin 
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV
