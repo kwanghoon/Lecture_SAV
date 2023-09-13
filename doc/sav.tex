@@ -3,6 +3,10 @@
 \usepackage{kotex}
 \usepackage{setspace}
 \usepackage{hyperref}
+\usepackage{listings}
+\lstset{
+  basicstyle=\linespread{0.8}\selectfont
+  }
 
 %%% Titles
 
@@ -58,11 +62,12 @@
 기초 프로그래밍 지식이 필요하다. 리스트, 트리, 그래프와 같은 자료
 구조를 이해하고 프로그래밍할 수 있어야 한다.
 
-프로그램 분석 기법에 대한 실행 가능한 명세를 작성할 때 하스켈
-프로그래밍언어를 사용한다. 이 언어를 사용한 이유는 그 프로그램으로
-작성한 명세가 간결하기 때문이다. 표 \ref{table:lines}에 각 분석 방법과
-그 방법을 구현한 하스켈 프로그램의 라인 수를 볼 수 있다. 88 라인에서
-250 라인으로 여섯 가지 분석 방법을 작성하였다.
+하스켈 프로그래밍언어로 프로그램 분석 기법에 대한 실행 가능한 명세를
+작성한다. 이 언어를 사용한 이유는 수학 표기법을 사용하여 명세를 작성한
+것에 비해 접근하기 쉽고, 하스켈 프로그램이 간결하여 명세로 삼기에
+적합하기 때문이다. 표 \ref{table:lines}에 각 분석 방법과 그 방법을
+구현한 하스켈 프로그램의 라인 수를 볼 수 있다. 88 라인에서 250
+라인으로 여섯 가지 분석 방법을 작성하였다.
 
 \begin{table}[ht]
 \begin{center}
@@ -202,7 +207,7 @@ ghci> doJson srcFile
 
 \chapter{While 프로그래밍언어}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Haskell]
 -- Program
 data Prog = Prog { progDecls :: Decls, progComms :: Comms }
 
@@ -251,7 +256,7 @@ data Op =
   | OpAnd
   | OpOr
   | OpNot
-\end{verbatim}
+\end{lstlisting}
 
 
 %% ghci> :type ECst
