@@ -200,6 +200,96 @@ ghci> doJson srcFile
 파이썬 프로그램에서 이 JSON 형식의 분석 내용을 읽어서 원하는 분석을
 진행할 수 있다.
 
+\chapter{While 프로그래밍언어}
+
+\begin{verbatim}
+-- Program
+data Prog = Prog { progDecls :: Decls, progComms :: Comms }
+
+type Decls = [ Decl ]
+type Comms = [ Comm ]
+
+type Decl  = (Type, VarName)
+
+-- Type
+data Type =
+    TyInt
+  | TyBool
+
+type VarName  = String
+
+-- Statement
+data Comm =
+    CSkip
+  | CSeq Comm Comm
+  | CAssign VarName Expr
+  | CRead VarName
+  | CWrite Expr
+  | CIf Expr Comm Comm
+  | CWhile Expr Comm
+  | CAssert Expr
+
+-- Expression
+data Expr =
+    ECst   Const
+  | EVar   VarName
+  | EBinOp Op Expr Expr
+  | EUnaryOp Op Expr
+
+data Const =
+    CInt  Int
+  | CBool Bool
+
+data Op =
+    OpAdd
+  | OpSub
+  | OpMul
+  | OpDiv
+  | OpMod
+  | OpLessThan   -- x < y
+  | OpEqual      -- x == y
+  | OpAnd
+  | OpOr
+  | OpNot
+\end{verbatim}
+
+
+%% ghci> :type ECst
+%% ECst :: Const -> Expr
+%% ghci> ECst (CInt (-126))
+%% ECst (CInt (-126))
+%% ghci> if x > y then x = 0 else y = 0 
+
+%% <interactive>:3:17: error: parse error on input ‘=’
+%% ghci> CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (Evar "y") ) (EBinOp OpEqual (EVar "x") (EVar "y") )  ))
+
+%% <interactive>:4:65: error:
+%%     • Data constructor not in scope: Evar :: String -> Expr
+%%     • Perhaps you meant ‘EVar’ (imported from Expr)
+%% ghci> CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y") ) (EBinOp OpEqual (EVar "x") (EVar "y") )  ))
+
+%% <interactive>:5:1: error:
+%%     • No instance for (Show (Comm -> Comm -> Comm))
+%%         arising from a use of ‘print’
+%%         (maybe you haven't applied a function to enough arguments?)
+%%     • In a stmt of an interactive GHCi command: print it
+%% ghci> CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y") ) (EBinOp OpEqual (EVar "x") (EVar "y") )  ))  (CAssign "x" (Const (CInt 0))) (CAssign "y" (Const (CInt 0)))
+
+%% <interactive>:6:136: error:
+%%     • Data constructor not in scope: Const :: Const -> Expr
+%%     • Perhaps you meant variable ‘const’ (imported from Prelude)
+
+%% <interactive>:6:167: error:
+%%     • Data constructor not in scope: Const :: Const -> Expr
+%%     • Perhaps you meant variable ‘const’ (imported from Prelude)
+%% ghci> CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y") ) (EBinOp OpEqual (EVar "x") (EVar "y") )  ))  (CAssign "x" (ECst (CInt 0))) (CAssign "y" (ECst (CInt 0)))
+%% CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y")) (EBinOp OpEqual (EVar "x") (EVar "y")))) (CAssign "x" (ECst (CInt 0))) (CAssign "y" (ECst (CInt 0)))
+%% ghci> let thenComm = (CAssign "x" (ECst (CInt 0)))
+%% ghci> let elseComm = (CAssign "y" (ECst (CInt 0)))
+%% ghci> let cond = (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y")) (EBinOp OpEqual (EVar "x") (EVar "y"))))
+%% ghci> CIf cond thenComm elseComm
+%% CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y")) (EBinOp OpEqual (EVar "x") (EVar "y")))) (CAssign "x" (ECst (CInt 0))) (CAssign "y" (ECst (CInt 0)))
+%% ghci> 
 
 \chapter{구문 분석}
 

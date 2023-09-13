@@ -3,3 +3,11 @@ int x;
 
 x = 0;
 x = x + 1
+
+// Prog {
+//  progDecls = [(TyInt,"x")],
+//  progComms = [
+//    CAssign "x" (ECst (CInt 0)),
+//    CAssign "x" (EBinOp OpAdd (EVar "x") (ECst (CInt 1)))
+//  ]
+// }
