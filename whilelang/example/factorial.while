@@ -1,15 +1,13 @@
 int x;
-int y;
 int z;
 
-y = x;
+read(x);
 
 z = 1;
-
-while (y > 1)
+while (x > 1)
  {
    z = z * y;
-   y = y - 1
+   x = x - 1
  };
 
-y = 0;
+write(z)

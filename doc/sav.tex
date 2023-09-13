@@ -5,7 +5,9 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \lstset{
-  basicstyle=\linespread{0.8}\selectfont
+  basicstyle=\linespread{0.8}\selectfont,
+  numbers=left,
+  stepnumber=1
   }
 
 %%% Titles
@@ -205,11 +207,167 @@ ghci> doJson srcFile
 파이썬 프로그램에서 이 JSON 형식의 분석 내용을 읽어서 원하는 분석을
 진행할 수 있다.
 
-\chapter{While 프로그래밍언어}
+\chapter{WHILE 프로그래밍언어}
 
+프로그램 분석 대상으로 C나 Java와 같은 프로그래밍언어를 사용하면 그
+언어의 복잡성으로 프로그램 분석을 집중해서 설명하기 어려울 수 있다.
+그러한 이유로 기초적인 특징만을 고려한 프로그래밍언어를 선택하고 그
+언어로 작성한 프로그램들을 대상으로 한다. 이 강의노트에서 WHILE
+프로그래밍 언어를 선택했다.
+
+\section{WHILE 프로그래밍 언어 구문  개요}
+
+WHILE 언어는 가장 기초적인 특징들로만으로 구성되어 있다. 문장으로
+할당문, 조건문, WHILE 반복문, 복합문 (여러 문장들을 세미콜론으로
+분류하여 나열), 생략문(SKIP), 입출력문, assert문이 있다. 문장내에
+사용할 수 있는 식의 종류는 상수, 변수, 단항 연산과 이항 연산이
+있다. 정수와 부울, 두 가지 종류의 값을 사용하며, 사칙연산과 나머지
+연산, 비교 연산 두 종류(\textless, ==)와 논리곱, 논리합, 논리 부정
+연산이 있다.
+
+WHILE 프로그램은 변수 타입들을 먼저 선언하고 뒤이어 문장들이 나오도록
+구성되어 있다. 함수나 클래스는 제공하지 않는다.
+
+정수를 입력받아 변수 x에 놓고 팩토리얼을 구해 출력하는 WHILE 에제
+프로그램을 살펴보자. 변수 x와 z를 정수 타입으로 선언한다. 정수를 입력
+받아 변수 x에 놓고, 변수 z는 1로 초기화한다. WHILE 반복문으로, 변수
+x를 1씩 감소시키며 변수 z에 누적해서 변수 x를 곱하는 것을 변수 x의
+값이 1보다 큰 동안 반복한다. 마지막으로 변수 z의 값을 출력한다.
+
+\begin{center}
+\begin{minipage}[h]{.4\textwidth}
+\begin{lstlisting}
+int x;
+int z;
+
+read(x);
+
+z = 1;
+while (x > 1)
+ {
+   z = z * x;
+   x = x - 1
+ };
+
+write(z)
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+더 많은 WHILE 프로그램 예제는
+\href{https://github.com/kwanghoon/Lecture_SAV/tree/master/whilelang/example}{강의
+  웹 사이트}에서 확인할 수 있다.
+
+\section{WHILE 프로그램을 자료구조로 표현: 추상구문트리}
+
+이제 WHILE 프로그램을 자료구조로 표현하는 방법을 살펴보자. 일반적으로
+프로그램에 분석 방법을 적용하려면 이 프로그램 텍스트를 먼저
+추상구문트리(Abstrac Syntax Tree, AST)로 표현하는 과정이 선행되어야
+한다. 추상구문트리는 프로그램의 구조를 모두 담고 있는 트리 자료
+구조이다.
+
+WHILE 프로그램의 추상구문트리를 다음과 같은 하스켈 프로그램의 타입
+선언으로 그 명세를 작성하려고 한다.
+
+2번째 줄 data Prog에서 data는 새로운 타입을 정의하는 하스켈 키워드이고
+뒤이어 나오는 Prog는 이때 정의하는 타입 이름이다.
+
+WHILE 프로그램은 이 Prog 타입의 값으로 표현하려 한다. 뒤이어 Prog
+Decls Comms에서 동일한 이름이어서 혼동되지만 이때 Prog는 이 값에
+붙이는 태그로 이해할 수 있다.  이 태그가 붙은 값은 Decls 타입의 값과
+Comms 타입의 값이 뒤따라야만 비로서 Prog 타입의 값이 완성된다.
+
+4번째 줄 type Decls에서 type은 새로운 타입 이름을 붙이는 하스켈
+키워드이고 뒤이어 나오는 Decls는 이때 새로 붙이려는 타입 이름이다.
+하스켈에서 리스트 타입은 [ - ] 대괄호를 사용한다. 그 안에 리스트
+원소의 타입을 넣는다. 즉, [ Decl ]은 Decl 타입의 값을 원소로 하는
+리스트의 타입을 뜻한다. 이 [ Decl ] 타입을 반복해서 나중에 언급해도
+되나 짧게 Decls 타입이라 부르겠다는 것이 4번째 줄의 새로운 타입 이름
+붙이기 선언이 의도하는 바이다.
+
+이 Decls 타입으로 WHILE 프로그램의 선언들을 표현하려 한다. Decls
+타입은 Decl 타입을 원소로 하는 리스트 타입인데, Decl 타입은 7번째 줄에
+Type 타입과 VarName 타입의 쌍 타입으로 정의되어 잇다.
+
+Type 타입은 WHILE에서 사용하는 정수 타입과 부울 타입을 표현한다.
+10번째 줄에 data Type을 선언하였고, 이때 두 가지 타입을 구분해서
+표현하도록 각각 TyInt와 TyBool 두 종류의 태그를 도입했다. 두 태그
+사이의 바($|$)는 Type 타입의 값이 TyInt이거나 또는 TyBool 둘 중 하나를
+선택 가능한 것임을 나타낸다.
+
+예를 들어, ``int x'' 타입 선언을 표현한 하스켈 값은 Decls 타입의
+\begin{center}
+  [ (TyInt, ``x'') ]
+\end{center}
+이다.
+
+
+VarName 타입은 변수 이름을 표현하는 타입으로 14번째 줄에 하스켈 문자열
+타입인 String으로 정의되어 있다.
+
+2번째 줄 Prog Decls Comms에서 Comms 타입으로 WHILE 프로그램 변수
+선언에 뒤따라 나오는 문장들을 표현하려 한다.
+
+5번째 줄 type Comms 선언도 4번째 줄과 같이 이해할 수 있다. Comm 타입은
+17번째 줄에 선언한 WHILE 언어에서 허용하는 문장들을 모아놓은 타입이다.
+8가지 문장 종류를 구분하기 위해 CSkip, CSeq, CAssign, CRead, CWrite,
+CIf, CWhile, CAssert 8가지 태그를 도입하였다.
+
+CSkip 태그는 뒤이어 채워야할 값이 없지만, CAssign 태그는 VarName
+타입의 값과 Expr 타입의 값이 함께 와야 비로서 Comm 타입의 완전한
+문장이 된다.
+
+예를 들어, 할당문 ``x = 0''을 표현한 하스켈 값은 Comm 타입의 
+\begin{center}
+  CAssign ``x'' (ECst (CInt 0))
+\end{center}
+이다. 하스켈의 String 타입의 문자열 ``x''는 VarName 타입의 값이기도
+하다. 28-29번째 줄을 보면 data Expr 선언으로 WHILE 언어의 식을 선언한
+타입이 있는데, 이 중 상수식을 표현하는 태그가 ECst이다. ECst 태그를
+식으로 완성하기 위해서 Const 타입의 값이 필요한데, 34-36번째 줄에 data
+Const 선언으로 이 타입이 선언되어 있다. 35번째 줄에 CInt 태그와 하스켈 정수 타입 Int로 WHILE 언어의 정수 값을 표현한다.
+
+또 다른 할당문 예를 살펴보자. ``x = x + 1''은 변수 x의 값을 1 증가시키는 할당문이다. 이를 표현한 하스켈 값은 Comm 타입의 
+\begin{center}
+  CAssign ``x'' (EBinOp OpAdd (EVar "x") (ECst (CInt 1)))
+\end{center}
+이다. WHILE 언어의 식을 표현하는 Expr 타입(28-32번째줄)을 보면 이
+할당문의 오른쪽 식에서 사용한 이진 연산 덧셈은 EBinOp OpAdd $\cdots
+\ \cdots$의 구조로 표현한다. 이때 OpAdd는 Op 타입의 가능한 값 중
+하나로 38-48번째 줄에 data Op 선언에서 39번째 줄에 있다.
+
+뒤이어 덧셈의 두 피연산자 ``x''와 ``1''에 해당하는 식이 나온다. 변수
+x는 Expr 타입의 EVar 태그를 사용하여 EVar ``x''로 표현하고, 상수 1은
+Expr 타입의 ECst 태그를 사용하여 ECst (CInt 1)로 작성한다. 이때 Const
+타입의 정수를 나타내는 CInt 태그와 하스켈 정수 값 1로 표현한다.
+
+지금까지 설명을 종합하면, 변수 x를 선언하고, 0으로 초기화하고, 1 증가시키는 WHILE 프로그램을 하스켈로 표현하면 다음과 같다.
+
+{\footnotesize
+ \begin{minipage}[h]{0.15\textwidth}
+\begin{verbatim}
+int x;
+x = 0;
+x = x + 1
+\end{verbatim}
+\end{minipage}
+$\ \ \Rightarrow \ \ $
+\begin{minipage}[h]{0.6\textwidth}
+\begin{verbatim}
+Prog
+ [(TyInt,"x")]
+ [ CAssign "x" (ECst (CInt 0)),
+   CAssign "x" (EBinOp OpAdd (EVar "x") (ECst (CInt 1))) ]
+\end{verbatim}
+\end{minipage}
+}
+
+{\footnotesize
+\begin{center}
+\begin{minipage}[h]{.6\textwidth}
 \begin{lstlisting}[language=Haskell]
 -- Program
-data Prog = Prog { progDecls :: Decls, progComms :: Comms }
+data Prog = Prog Decls Comms
 
 type Decls = [ Decl ]
 type Comms = [ Comm ]
@@ -257,7 +415,9 @@ data Op =
   | OpOr
   | OpNot
 \end{lstlisting}
-
+\end{minipage}
+\end{center}
+}
 
 %% ghci> :type ECst
 %% ECst :: Const -> Expr
@@ -294,7 +454,31 @@ data Op =
 %% ghci> let cond = (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y")) (EBinOp OpEqual (EVar "x") (EVar "y"))))
 %% ghci> CIf cond thenComm elseComm
 %% CIf (EUnaryOp OpNot (EBinOp OpOr (EBinOp OpLessThan (EVar "x") (EVar "y")) (EBinOp OpEqual (EVar "x") (EVar "y")))) (CAssign "x" (ECst (CInt 0))) (CAssign "y" (ECst (CInt 0)))
-%% ghci> 
+%% ghci>
+
+\section{파이썬 구현}
+
+WHILE 프로그램의 추상구문트리를 표현하는 명세로 하스켈 타입을
+선언하였다. 이 명세에서 의도하는 바를 파이썬으로 구현해본다.
+
+type T = ... 또는 data T = ... 형태로 선언한 하스켈 타입은 파이썬
+클래스로 옮길 수 있다.
+
+예를 들어, data Prog 선언은 Prog라는 이름을 갖는 클래스를 도입하고 그
+안에 Prog Decls Comms에서 필요한 Decls를 저장하는 멤버 변수와 Comms를
+저장하는 멤버 변수를 두는 형태로 파이썬 클래스를 구현할 수 있다.
+
+type Decls 선언은 Decls라는 이름의 파이썬 클래스를 선언하고 멤버
+변수로 Decl 값의 리스트에 해당하는 파이썬 리스트 값을 저장할 수 있도록
+구성하면 된다.
+
+data Comm 선언은 8가지 서로 다른 태그가 있다. 이러한 형태의 명세는
+Comm 이라는 이름의 기반 클래스를 먼저 선언한다. 멤버 변수는 특별히
+필요하지 않다. 각 태그에 대해 클래스를 도입하되 이 클래스는 기반
+클래스를 상속 받도록 서브 클래스로 구성한다. 각 태그에 수반해야할 값들
+(예를 들어 CSeq의 경우 두 개의 Comm 타입의 값들이 필요하다다)을 서브
+클래스의 멤버 변수로 두어 하스켈 명세를 충실히 구현할 수 있다.
+
 
 \chapter{구문 분석}
 
