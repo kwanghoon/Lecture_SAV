@@ -4,6 +4,7 @@
 \usepackage{setspace}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{multirow}
 \lstset{
   basicstyle=\linespread{0.8}\selectfont,
   numbers=left,
@@ -484,6 +485,192 @@ Comm 이라는 이름의 기반 클래스를 먼저 선언한다. 멤버 변수�
 
 
 \chapter{구문 분석}
+
+먼저 언어(languages), 문법(grammar), 오토마타(automata)의 3가지 기초
+개념을 소개하고, 이를 바탕으로 어휘 분석(lexical anlaysis)과 구문 구조
+분석(parsing)을 설명한다.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|c|l|} \hline
+  \multirow{2}{*}{공통 주제}
+    & 오토마타, 문법, 언어 \\ \cline{2-2}
+    & 촘스키 계층 \\ \hline
+  \multirow{3}{*}{어휘 분석} & 유한 오토마타 \\ \cline{2-2}
+    & 정규식 \\ \cline{2-2}
+    & 어휘 분석기 구조 \\ \hline
+  \multirow{5}{*}{구문 구조 분석}
+    & LR 파싱 \\ \cline{2-2}
+    & LR 구문 분석기 구조 \\ \cline{2-2}
+    & LR 문법 작성 요령 \\ \cline{2-2}
+    & 모호한 문법 처리 \\ \cline{2-2}
+    & 에러 복구 \\ \hline
+\end{tabular}
+\caption{기본 개념과 구문 분석 주제}
+\label{table:syntaxanalysis}
+\end{center}
+\end{table}
+
+
+\section{기본 개념: 언어, 문법, 오토마타}
+
+
+구문 분석에서 사용하는 3가지 기본 개념은 언어, 문법, 오토마타이다. 이
+장에서 이 개념들이 무엇이고 서로 어떻게 연결되어 있는지에 대해 살펴본다.
+
+\subsection{언어}
+
+우리말이나 영어와 같은 자연어(natural languages)를 익숙하게 사용하고
+있지만 아마도 언어(langauges)가 무엇인지 설명하기는 쉽지 않을 것이다.
+
+언어는 단어(word) 또는 문장(sentence)들의 집합으로 정의한다. 언어의
+예로, 영문자로 시작하고 뒤이어 영문자나
+숫자가 반복되는 간단한 형태의 변수 이름 또는 함수 이름과 같은
+식별자들(identifier)의 집합을 고려해볼 수 있다.
+%
+편의상 소문자 영문자만 고려한다. 그러한 식별자들을 모두 나열한 집합을
+언어로 정의할 수 있다. 물론 그 식별자의 수는 무한하다.
+
+\begin{center}
+  \{ \ a, ... ,z, aa, ..., az, a0, ..., a9,
+       ba, ..., bz, b0, ..., b9, ca, ...
+     \ 
+  \}
+\end{center}
+
+편의상 이 언어에 $\L_{id}$이라는 이름을 붙이자. $\L_{id}$로 x나 y가
+가능하고, varname과 obj123을 사용할 수 있다. str2int와 같이 다소
+낯설수 있지만 숫자가 중간에 놓인 단어도 가능하다.
+
+각 단어나 문장을 구성하는 요소는 $\L_{id}$에서 영문자와 숫자이다.
+\begin{center}
+  \{ \ a, ... ,z, 0, ..., 9
+     \ 
+  \}
+\end{center}
+
+
+이와 같은 단어 또는 문장의 구성 요소를 알파벳(alphabet)이라
+부른다. 영어에서는 알파벳이 에이부터 제트까지이지만 여기서
+이야기하려는 알파벳은 영문자 뿐만 아니라 점, 세미콜론, 따옴표를 포함한
+임의의 기호로 구성될 수 있다. 알파벳을 그리스 문자 $\Sigma$로
+표현한다.
+
+단어 또는 문장은 이 알파벳을 구성하는 기호들을 이어 붙여(concatenate)
+구성하고, 원하는 형태의 단어 또는 문장들을 모아 집합으로 구성하여
+언어를 이룬다. 예를 들어, $L_{id}$의 단어 str2int는 $\Sigma_{id}$에서
+s, t, r, 2, i, n, t를 꺼내 차례로 붙여 구성한 것이다. 이때 기호 t를 두
+번 사용하였다.
+
+원하는 단어를 구성하기 위해서 동일한 기호를 되풀이해서 사용할 수
+있다. $\Sigma^i$는 알파벳에 윗 첨자 $i$를 붙여 알파벳에서 $i$번
+반복해서 기호를 꺼내 붙여만든 모든 단어들의 집합이다. $\Sigma^1$에
+x나 y가 포함되어 있고, str2int는 $\Sigma^7$의 원소이다.
+
+$\Sigma^0$는 전혀 기호를 꺼내지 않았으니 비어있는 단어로만 되어 있는
+집합이다.  보통 비어있는 단어를 $\epsilon$으로 표시한다. 즉, $\Sigma^0
+\ = \ \{ \ \epsilon \ \}$. 어떤 언어에서 비어 있는 단어를 허용할지
+여부는 그 언어를 설계하는 사람의 의도에 달려 있다.
+
+이와 같이 언어를 알파벳을 임의의 횟수로 조합해서($\Sigma^*$) 구성한
+모든 가능한 단어나 문장들로 이루어진 전체 집합의 일부분으로 정의할 수
+있다.
+
+\begin{center}
+  $L \ \subseteq \ \Sigma^0 \cup \Sigma^1 \cup \Sigma^2 \cup \cdots  \ = \ \Sigma^*$
+\end{center}
+
+\subsection{문법}
+
+언어를 분석하기 위해 이 언어를 표현하는 방법이
+필요하다. 문법(Grammar)은 언어를 기술하는 다양한 방법 중에 널리
+사용되는 방법이다. 자연어의 문법을 먼저 살펴보면, 영어 문법을 통해
+특정 문장이 잘 구성되었는지 여부를 가릴 수 있다. 주어 다음에 동사가
+나오고 타동사의 경우 목적어가 순서대로 나오는 식이다. 이와 같이
+문법에는 주어, 동사, 목적어와 같은 구성 요소가 있고 어떻게
+구성해야하는지 정하는 규칙이 있다.
+
+\begin{center}
+  \textless sentence\textgreater
+  \ $\rightarrow$ \ 
+  \textless subject\textgreater \ 
+  \textless verb\textgreater \ 
+  \textless object\textgreater
+\end{center}
+
+프로그래밍언어와 같은 형식 언어(formal languages)에서도 비슷한 형태의
+규칙으로 문법을 기술한다. 이 규칙을 생산(production)이라
+부른다.
+%
+자연어 문법의 규칙을 사용하여 \textless sentence\textgreater를
+\textless subject\textgreater \ \textless verb\textgreater \ \textless
+object\textgreater로 펼쳐서 주어, 동사, 목적어 순서대로 유효한 문장을
+만든다.
+%  
+형식언어의 생산 규칙도 어떤 기호들을 다른 기호들로 대체하면서 유효한
+문장을 만든다.
+%
+예를 들어, 식별자 언어 $\L_{id}$에 포함된 단어만 만드는 문법($G_{id}$)의 생산
+규칙($P_{id}$)을 다음과 작성해 볼 수 있다.
+\begin{center}
+  $S_{id} \ \rightarrow \ a \ AlphaNum$ \\
+  ... \\
+  $S_{id} \ \rightarrow \ z \ AlphaNum$ \\
+  $S_{id} \ \rightarrow \ 0 \ AlphaNum$ \\
+  ... \\
+  $S_{id} \ \rightarrow \ 9 \ AlphaNum$ \\
+  $AlphaNum \ \rightarrow \ AlphaNum \ a$ \\
+  ... \\
+  $AlphaNum \ \rightarrow \ AlphaNum \ z$ \\
+  $AlphaNum \ \rightarrow \ AlphaNum \ 0$ \\
+  ... \\
+  $AlphaNum \ \rightarrow \ AlphaNum \ 9$ \\
+  $AlphaNum \ \rightarrow \ $
+\end{center}
+
+
+문법에서 다루는 기호는 두 가지, 단말 기호(terminals)와 비단말
+기호(nonterminals)가 있다.  생산 규칙의 왼쪽에 나타나서 다른 기호들로
+대체할 수 있는 기호를 비단말 기호라 하고, 그렇지 않고 더이상 대체되지
+않는 기호를 단말 기호라 부른다.  예제 문법에서 S와 AlphaNum은 비단말
+기호들이고 a부터 z와 0부터 9를 단말 기호들이다.
+
+위 문법을 사용해서 단어 str2int를 만들어보자. 문법에서 시작 기호(start
+symbol)에서부터 생산 규칙을 사용해 왼쪽 비단말 기호를 오른쪽 기호들로
+대체하면서 단어를 만든다. 예제 문법에서 S를 시작 기호로 정한다.
+
+\begin{center}
+  \begin{tabular}{r c l l }
+    $S_{id}$
+      & $\Rightarrow$ & $s \ AlphaNum$  & by $S_{id} \ \rightarrow \ s \ AlphaNum$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ t$ & by $AlphaNum \ \rightarrow \ AlphaNum \ t$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ n \ t$ & by $AlphaNum \ \rightarrow \ AlphaNum \ n$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ i \ n \ t$ & by $AlphaNum \ \rightarrow \ AlphaNum \ i$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ 2 \ i \ n \ t$ & by $AlphaNum \ \rightarrow AlphaNum \ 2$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ r \ 2 \ i \ n \ t$ & by $AlphaNum \ \rightarrow \ AlphaNum \ r$ \\
+      & $\Rightarrow$ & $s \ AlphaNum \ t r 2 \ i \ n \ t$ & by $AlphaNum \ \rightarrow \ AlphaNum \ t$ \\
+      & $\Rightarrow$ & $s \ t \ r \ 2 \ i \ n \ t$ & by $AlphaNum \ \rightarrow \ $ 
+  \end{tabular}
+\end{center}
+
+일반적으로 문법 $G$는 단말(V)과 비단말 기호(T), 시작 비단말 기호(S),
+생산 규칙(P)로 구성된다.
+
+\begin{center}
+  $ G \ = \ (V, T, S, P) $
+\end{center}
+
+예제를 통해 살펴본 바와 같이, 식별자를 만드는 문법 $G_{id}$는 다음과 같다.
+
+\begin{center}
+  $ G_{id} \ = \ (\{S, AlphaNum\}, \ \{a,...,z,0,...9 \}, \ S_{id}, \ P_{id}) $
+\end{center}
+
+
+\subsection{오토마타}
+
+
+
 
 \chapter{의미 분석}
 
