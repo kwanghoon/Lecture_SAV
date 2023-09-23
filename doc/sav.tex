@@ -11,6 +11,9 @@
   stepnumber=1
   }
 
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning}
+
 %%% Titles
 
 \title{프로그램 분석 기초}
@@ -25,6 +28,8 @@
 \begin{document}
 
 \maketitle
+
+\tableofcontents
 
 \chapter{프로그램 분석 개요}
 
@@ -519,6 +524,8 @@ Comm 이라는 이름의 기반 클래스를 먼저 선언한다. 멤버 변수�
 장에서 이 개념들이 무엇이고 서로 어떻게 연결되어 있는지에 대해 살펴본다.
 
 \subsection{언어}
+\label{subsec:language}
+
 
 우리말이나 영어와 같은 자연어(natural languages)를 익숙하게 사용하고
 있지만 아마도 언어(langauges)가 무엇인지 설명하기는 쉽지 않을 것이다.
@@ -581,6 +588,8 @@ $\Sigma^0$는 전혀 기호를 꺼내지 않았으니 비어있는 단어로만 
 \end{center}
 
 \subsection{문법}
+\label{subsec:grammar}
+
 
 언어를 분석하기 위해 이 언어를 표현하는 방법이
 필요하다. 문법(Grammar)은 언어를 기술하는 다양한 방법 중에 널리
@@ -666,11 +675,206 @@ symbol)에서부터 생산 규칙을 사용해 왼쪽 비단말 기호를 오른
   $ G_{id} \ = \ (\{S, AlphaNum\}, \ \{a,...,z,0,...9 \}, \ S_{id}, \ P_{id}) $
 \end{center}
 
+과연 이 문법 $G_{id}$로 만들 수 있는 모든 단어들을 모으면, $
+L(G_{id})$, 식별자 언어 $L_{id}$와 동일할까?
+%
+즉, 이 문법으로 단어를 만들면 그 단어는 식별자 언어에 항상 포함되고,
+식별자 언어에서 단어를 뽑으면 이 문법으로 그 단어를 항상 만들수
+있는지? 답은 그렇다이다.
+
+\begin{equation}
+  L(G_{id}) \ = \ L_{id}
+  \label{equ:gidisequaltolid}
+\end{equation}
+
+식별자 언어와 문법의 경우는 동일하다. 여기에서 논의하지 않지만 증명도
+가능하다. 일반적으로 언어와 문법이 동일한지를 보이기 어렵다.
+
+
+식별자 문법에서 사용한 생산 규칙은 화살표 왼쪽은 비단말 기호가 한 개
+나타나고 오른쪽은 비단말 기호를 최대 한 개 사용하고 단말 기호는
+제한없이 사용할 수 있는 제한적인 형태를 가지고 있었다. 이러한 형태의
+생산 규칙으로 이루어진 문법을 선형 문법(Linear grammar)라
+부른다.
+
+$G_{id}$의 생산 규칙을 다음과 같이 변경해도
+\begin{center}
+  ... \\
+  $AlphaNum \ \rightarrow \ a \ AlaphaNum$,\\
+  ...,\\
+  $AlphaNum \ \rightarrow \ z \ AlaphaNum$, \\
+  $AlphaNum \ \rightarrow \ 0 \ AlaphaNum$, \\
+  ..., \\
+  $AlphaNum \ \rightarrow \ 9 \ AlaphaNum$ \\
+  ...
+\end{center}
+$L(G_{id})$ 와 동일한 언어를 생성하는 문법이다. 이 생산규칙은 오른편의
+비단말 기호의 위치가 모두 단말 기호의 오른편에 있는 형태로 선형
+문법보다 더 제한적이다. 이러한 형태의 생산 규칙만을 가지고 있으면 정규
+문법(Regular grammar)이라 부른다.
+
+아래 예시는 오른편에 비단말 기호가 한 개 이상 나타난 생산 규칙을
+가지고 있어 정규 문법이나 선형 문법보다 자유로운 형태이다.
+\begin{center}
+  $S \ \rightarrow \ A \ S \ B$ \\
+  $S \ \rightarrow \ $ \\
+  $A \ \rightarrow \ a$ \\
+  $B \ \rightarrow \ b$
+\end{center}
+이 문법으로 생성하는 언어는 $L(S) = \{ \ a^n b^n \ | \ n \geq 0
+\ \}$이다. 자유 문맥 문법(Context-free grammar)이라 부른다.  생산
+규칙의 왼쪽 비단말 기호가 나타나면 그 주변 문맥을 고려하지 않고 그
+규칙을 적용할 수 있다.
+
+문맥에 민감한 문법(Context-sensitive grammar)은 주변 문맥을 고려해서
+생산 규칙을 적용하도록 작성한 문법이다. 예를 들어 $L(S) = \{ \ a^n b^n
+c^n \ | \ n \geq 1 \ \}$의 문법은 다음과 같다.
+
+\begin{center}
+  $S \ \rightarrow \ a \ b \ c \ | \ a \ A \ b \ c$ \\
+  $A \ b \ \rightarrow \ b \ A$ \\
+  $A \ c \ \rightarrow \ B \ b \ c \ c$ \\
+  $a \ B \ \rightarrow \ a \ a \ | \ a \ a \ A$
+\end{center}
+
+이 문법으로 $a^3 b^3 c^3$를 유도해보자\footnote{Peter Linz, Introduction to Formal Languages and Automata, Example 11.2 in Chapter 11.3.}.
+
+\begin{center}
+  \begin{tabular}{r c l l }
+    $S$
+      & $\Rightarrow$ & $a \ A \ b \ c$  & by $S \ \rightarrow \ a \ A \ b \ c$ \\
+      & $\Rightarrow$ & $a \ b \ A \ c$ & by $A \ b \ \rightarrow \ b \ A$ \\
+      & $\Rightarrow$ & $a \ b \ B \ b \ c \ c$ & by $A \ c \ \rightarrow \ B \ b \ c \ c$ \\
+      & $\Rightarrow$ & $a \ B \ b \ b \ c \ c$ & by $b \ B \ \rightarrow \ B \ b$ \\
+      & $\Rightarrow$ & $a \ a \ A \ b \ b \ c \ c$ & by $a \ B \ \rightarrow \ a \ a \ A$ \\
+      & $\Rightarrow$ & $a \ a \ b \ A \ b \ c \ c$ & by $A \ b \ \rightarrow \ b \ A$ \\
+      & $\Rightarrow$ & $a \ a \ b \ b \ A \ c \ c$ & by $A \ b \ \rightarrow \ b \ A$ \\
+      & $\Rightarrow$ & $a \ a \ b \ b \ B \ b \ c \ c \ c$ & by $A \ c \ \rightarrow \ B \ b \ c \ c$ \\
+      & $\Rightarrow$ & $a \ a \ b \ B \ b \ b \ c \ c \ c$ & by $b \ B \ \rightarrow \ B \ b$ \\
+      & $\Rightarrow$ & $a \ a \ B \ b \ b \ b \ c \ c \ c$ & by $b \ B \ \rightarrow \ B \ b$ \\
+      & $\Rightarrow$ & $a \ a \ a \ b \ b \ b \ c \ c \ c$ & by $a \ B \ \rightarrow \ a \ a$
+  \end{tabular}
+\end{center}
+
+정규 문법, 선형 문법, 문맥 자유 문법, 문맥에 민간함 문법은 생산 규칙의
+형태에 따라 해당 클래스의 이름을 붙였다.  하지만 구문 구조 분석에서
+소개할 LR 문법의 경우 생산 규칙의 형태로 그 문법의 특징을 규정 짓기
+어려워서 그 문법으로 생산하는 단어를 받아들이는 일종의 컴퓨터 또는
+기계에 해당하는 오토마톤이 존재하는지 여부로 그 클래스를 정의하는
+경우도 있다. 그 존재 여부는 LR 문법으로부터 LR 오토마톤을 만드는
+알고리즘으로 판단한다.
+
 
 \subsection{오토마타}
+\label{subsec:automata}
+
+오토마타(automata)\footnote{또는 오토마톤(automaton)}는 컴퓨터의 상태
+전이 요소를 강조하여 추상화한 모델이다. 컴퓨터는 입출력, 기억 장치,
+제어부로 구성한다. 마찬가지로 오토마타도 기억 장치의 상태와 입력을
+받아 다음 기억 장치의 상태와 출력을 내는 전이 함수(Transition
+function)로 정의한다. 이 함수가 일종의 제어부에 해당한다.
+
+기억 장치의 형태에 따라 다양한 클래스의 오토마타를 정의할 수
+있다. 현재 상태만 저장하는 기억 장치를 사용하는 유한 오토마타(Finte
+automata), 지나온 상태들을 스택으로 저장하는 푸쉬 다운
+오토마타(Phsh-down automata), 자유롭게 읽고 쓸 수 있는 램(RAM)과 같은
+기억 장치를 사용하는 튜링 기계(Turing machine) 등이 있다.
+
+전이 함수 대신 전이 관계(Transition relation)를 도입하여 현재 상태에서
+동일한 입력에 대해 하나 이상의 액션을 취할 수 있는 오토마타를 정의할
+수 있다. 전이 함수를 사용하면 결정적 오토마타(Deterministic
+automata)라 부르고 전이 관게를 사용하면 비결정적
+오토마타(Non-deterministic automata)라고 한다.
+
+원하는 바에 따라서 결정적 오토마타와 비결정적 오토마타를 사용한다.
+간단한 유한 오토마타의 경우 비결정적 오토마타와 동일한 결정적
+오토마타로 상호 변환할 수 있음이 잘 알려져 있다.
+
+오토마타는 어떤 언어에 속하는 단어 또는 문장을 입력으로 받아들여
+최종적으로 유효한지 예와 아니오 여부를 출력한다. 이때 오토마타를
+수용기(Accepter)라 부른다. 일반적으로 오토마타는 출력을 낸다. 이때의
+오토마타를 변환기(transducer)라 한다.
+
+식별자가 유효한지 판단하는 오토마타를 예시로 살펴보자. 오토마타를
+그래프로 나타내면 그림 \ref{fig:identifierautumatagraph}과 같다.
+
+\begin{figure}[ht]
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+   \node[state, initial] (q0) {$q_0$};
+   \node[state, accepting, right=of q0] (q1) {$q_1$};
+   
+   \draw[->] (q0) to node {a...z} (q1);
+   \draw[loop above] (q1) to node {a...z, 0...9} (q1);
+\end{tikzpicture}
+\end{center}
+\caption{식별자 오토마타}
+\label{fig:identifierautumatagraph}
+\end{figure}
+
+이 그래프에서 노드는 상태를, 에지는 상태 전이를 나타낸다. 상태 $q_0$는
+시작 상태이고 영문자 $a$부터 $z$ 중 하나를 입력 받으면 다음 상태
+$q_1$으로 바꾼다. 상태 $q_1$은 종료 상태로 한 개의 영문자가 유효한
+식별자로 받아 들인다. 종료 상태는 두 개의 원을 겹쳐서 표시한다. 상태
+$q_1$에서 입력이 끝나지 않고 숫자나 영문자가 반복해서 들어와도 누적된
+입력을 유효한 식별자로 받아들인다.
+
+이 오토마타는 결정적이다.  모든 상태에서 주어진 어떤 입력에 대해서도
+오직 한 가지 방법으로만 상태 전이가 발생하기 때문이다.
+
+또한 이 예시는 다루는 상태의 수가 유한한 유한 오토마타(finite
+automata)이다. 상태가 유한하기 때문에 이 오토마타로 다룰 수 있는
+정보가 제한적이다.
 
 
+이 그래프를 함수 $\delta_{id}$로 표시하면 다음과 같다.
 
+\begin{center}
+  $\delta_{id}(q_0, a) = q_1$ \\
+  ... \\
+  $\delta_{id}(q_0, z) = q_1$ \\
+  $\delta_{id}(q_1, a) = q_1$ \\
+  ... \\
+  $\delta_{id}(q_1, z) = q_1$ \\
+  $\delta_{id}(q_1, 0) = q_1$ \\
+  ... \\
+  $\delta_{id}(q_1, 9) = q_1$ \\
+\end{center}
+
+(결정적 유한) 오토마타 $M$은 일반적으로 상태 집합 $Q$, 입력 알파벳
+기호 $\Sigma$, 전이 함수 $\delta$, 시작 상태 $q_0$, 종료 상태들 $F$,
+다섯 가지 구성 요소로 기술한다.
+
+
+식별자를 인식하는 오토마타 $M_{id}$는 다음과 같이 작성할 수 있다.
+\[
+M_{id} \ = \ (\{q_0,q_1\}, \ \{a,...,z,0,...9\}, \ \delta_{id}, \ q_0, \ \{q_1\} )
+\]
+
+앞서 \ref{subsec:grammar} 장에서 다룬 문법 $G_{id}$에서 만들 수 있는
+모든 식별자를 이 오토마타 $M_{id}$에서 유효하다고 판단할까? 반대로 이
+오토마타 $M_{id}$에서 유효하다고 판단하는 모든 식별자를 문법
+$L_{id}$에서 만들 수 있을까? 두 질문에 대한 답은 그렇다이다.
+%
+이런 점에서 문법(으로 만들 수 있는 언어)과 오토마타(로 인식할 수 있는
+언어)는 동일하다고 한다.
+\begin{equation}
+  L(M_{id}) \ = \ L(G_{id})
+  \label{equ:midisequaltogid}
+\end{equation}
+
+식 \ref{equ:gidisequaltolid}과 식 \ref{equ:midisequaltogid}를 조합하면
+식별자에 관한 언어와 문법과 오토마타, 세 가지가 모두 동일하다.
+
+
+\begin{equation}
+  L_{id} \ = \ L(G_{id}) \ = \ L(M_{id})
+  \label{equ:lisisequaltomidisequaltogid}
+\end{equation}
+
+\section{어휘 분석}
+
+\section{구문 구조 분석}
 
 \chapter{의미 분석}
 
