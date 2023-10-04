@@ -15,6 +15,8 @@ class CInt(Const):
 
     def __str__(self) -> str:
         return f'CInt {self.value}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class CBool(Const):
@@ -22,12 +24,16 @@ class CBool(Const):
 
     def __str__(self) -> str:
         return f'CBool {self.value}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 # Types
 @dataclass
 class Type:
     def __str__(self) -> str:
         return f'{self.__class__.__name__}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class TyInt(Type):
@@ -42,6 +48,8 @@ class TyBool(Type):
 class Op:
     def __str__(self) -> str:
         return f'{self.__class__.__name__}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class OpAdd(Op):
@@ -94,13 +102,17 @@ class ECst(Expr):
 
     def __str__(self) -> str:
         return f'ECst {self.value}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class EVar(Expr):
     var_name: VarName
 
     def __str__(self) -> str:
-        return f'EVar "{self.var_name}"'
+        return f"EVar '{self.var_name}'"
+    def __repr__(self) -> str:
+        return self.__str__()
     
 @dataclass
 class EBinOp(Expr):
@@ -110,6 +122,8 @@ class EBinOp(Expr):
 
     def __str__(self) -> str:
         return f'EBinOp {self.op} {self.left} {self.right}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class EUnaryOp(Expr):
@@ -118,6 +132,8 @@ class EUnaryOp(Expr):
 
     def __str__(self) -> str:
         return f'EUnaryOp {self.op} {self.expr}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 # Commands
 @dataclass
@@ -136,6 +152,8 @@ class CSeq(Comm):
 
     def __str__(self) -> str:
         return f'CSeq {self.comm1} {self.comm2}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class CAssign(Comm):
@@ -144,6 +162,8 @@ class CAssign(Comm):
 
     def __str__(self) -> str:
         return f'CAssign "{self.var_name}" {self.expr}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class CRead(Comm):
@@ -151,6 +171,8 @@ class CRead(Comm):
 
     def __str__(self) -> str:
         return f'CRead {self.var_name}'
+    def __repr__(self) -> str:
+        return self.__str__()
     
 @dataclass
 class CWrite(Comm):
@@ -158,6 +180,8 @@ class CWrite(Comm):
 
     def __str__(self) -> str:
         return f'CWrite {self.expr}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class CIf(Comm):
@@ -167,6 +191,8 @@ class CIf(Comm):
 
     def __str__(self) -> str:
         return f'CIf {self.expr} {self.comm1} {self.comm2}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 @dataclass
 class CWhile(Comm):
@@ -175,6 +201,8 @@ class CWhile(Comm):
 
     def __str__(self) -> str:
         return f'CWhile {self.expr} {self.comm}'
+    def __repr__(self) -> str:
+        return self.__str__()
     
 @dataclass
 class CAssert(Comm):
@@ -182,15 +210,19 @@ class CAssert(Comm):
 
     def __str__(self) -> str:
         return f'CAssert {self.expr}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 # Programs    
 @dataclass
 class Prog:
-    progDecls: Decls
+    progDecls: progDecls
     progComms: progComms
 
     def __str__(self) -> str:
-        return f'Prog {{{self.progDecls}, {self.progComms}}}'
+        return f'Prog {self.progDecls}, {self.progComms}'
+    def __repr__(self) -> str:
+        return self.__str__()
 
 Decl = Tuple[Type, VarName]
 Decls = List[Decl]
