@@ -58,6 +58,7 @@ dataflow verbose prog =
                 printLabeledComm list
 
                 putStrLn "\nControl-flow graph:"
+                putStrLn (show cfgRoot)
                 printEdges edges
 
                 putStrLn "\nReverse control-flow:"
@@ -84,7 +85,7 @@ dataflow verbose prog =
     (root, labelMap) = numbering 1 (mkSeq comms) Map.empty
     list             = Map.toList labelMap
     
-    edgeSet          = computeCfg  labelMap root Set.empty
+    (cfgRoot, edgeSet) = computeCfg  labelMap root Set.empty
     edges            = Set.toList edgeSet
     
     revEdges         = Map.toList (revCfg edges)
@@ -184,13 +185,35 @@ solve equations = repUntilNoChange initSol equations
   where
     setVars = [ set | Assign set _ <- equations ]
     initSol = foldl (\m sv -> Map.insert sv Set.empty m) Map.empty setVars
+    
+-- |  repUntilNoChange : F(sj) =sj+1 sj == sj+1이 같을 때까지 onestep을 반복
+-- 
+-- |  onesetp : F를 현재 솔루션 Si를 인자로 주어 풀이해서 Si+1 구하는 함수
+--                  Si+1 =  F(Si)
+-- |  F의 예시
+--        Assign RDEntry(1) 집합식1
+--         ...
+--        Assign RDEntry(6) 집합식6
+--        Assign RDExit(1) 집합식1
+--         ...
+--        Assign RDExit(6) 집합식6
 
+-- | 집합식의 예시
+--    집합 상수 Singleton "z" 2  { (z,2) }
+--    변수 Entry 3               RDEntry(3)
+--    변수 Exit 2                RDExit(2)
+--    Diff 집합식 "t"            eval(집합식) \ { ("t",1), ..., ("t", 6) }
+--    Uniton 집합식1 집합식2      eval(집합식1) U eval(집합식2)
+
+--
+-- |  eval : 현재 솔루션 Si를 기준으로 주어진 집합 식을 풀어 어떤 집합을 리턴
+--
 repUntilNoChange sol equations =
 --  trace (show sol) $ 
-  let (solNext, isChanged) = bigstep sol equations in
+  let (solNext, isChanged) = onestep sol equations in
     if isChanged then repUntilNoChange solNext equations else solNext
   where
-    bigstep sol equations =
+    onestep sol equations =
       foldl (\ (sol,flag) equ-> step flag sol equ) (sol,False) equations
     
     step flag sol (Assign setVar rhs) =
@@ -229,9 +252,9 @@ repUntilNoChange sol equations =
 
 -- | Control-flow graph analysis
 
-computeCfg labelMap n graph = graph'
+computeCfg labelMap n graph = (cfgRoot, graph')
   where
-    (_, _, graph') = cfg labelMap n graph  
+    (cfgRoot, _, graph') = cfg labelMap n graph  
 
 
 -- | Control-flow graph analysis

@@ -1082,7 +1082,7 @@ interpretation), 타입과 효과 시스템(Type and effect systems), 네 가지
 
 도달 가능한 정의 분석을 예시로 자료 흐름 분석을 설명한다.
 %
-분석 대상으로 최대공약수를 구하는 WHILE 프로그램을 예제로 살펴본다.
+분석 대상으로 입력 x의 팩토리얼 x!을 구하는 WHILE 프로그램을 예제로 살펴본다.
 
 \begin{center}
 \begin{minipage}[h]{.7\textwidth}
@@ -1095,7 +1095,7 @@ while ( [3]  y > 1 )
   [4]  z := z * y ;
   [5]  y := y - 1
 
-  [6]  y := 0
+[6]  y := 0
   \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -1107,7 +1107,7 @@ while ( [3]  y > 1 )
 \begin{center}
   \includegraphics[width=.5\linewidth]{dataflow_gcd_flowchart.png}
 \end{center}
-\caption{최대공약수 프로그램의 플로우 차트}
+\caption{팩토리얼 프로그램의 플로우 차트}
 \label{fig:dataflow_gcd_flowchart}
 \end{figure}
 
