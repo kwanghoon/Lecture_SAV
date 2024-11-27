@@ -44,6 +44,12 @@
      - [기호실행](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/symexec/SymExec.hs)
   * 오픈소스 소프트웨어
      - [Klee](http://klee.github.io/)
+   
+ - [신경망 분석](https://docs.google.com/presentation/d/1Ifm2BYE1julWGpPblJq_ha2hxbq3_srZb3fl9ZoG67c/edit?usp=sharing)
+   * 신경망 예제와 LiRPA 분석
+      - [분석 예제](https://github.com/kwanghoon/NNV/blob/main/Wireless.hs)
+   * 오픈소스 소프트웨어
+      - [Auto LiRPA](https://github.com/Verified-Intelligence/auto_LiRPA)
 
 ### WHILE 데모 프로그램 설치 및 실행 방법
 
