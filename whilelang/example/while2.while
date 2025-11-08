@@ -6,9 +6,14 @@
 int t;
 int p;
 int q;
+int p1;
+int q1;
 
 read(p);
 read(q);
+
+p1 = p;
+q1 = q;
 
 if (q <= p)
 then
@@ -28,4 +33,6 @@ while (p % q != 0)
     q = t;
   };  
 
-write (q)
+write (q);
+
+assert (p1 % q == 0 && q1 % q == 0)

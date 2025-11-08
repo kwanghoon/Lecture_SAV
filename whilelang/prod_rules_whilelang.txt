@@ -1,0 +1,46 @@
+0: Program' -> Program
+1: Program -> Decls Comms
+2: Decls -> 
+3: Decls -> Decl
+4: Decls -> Decl ; Decls
+5: Decl -> Type TkIdentifier
+6: Type -> int
+7: Type -> bool
+8: Comms -> 
+9: Comms -> Comm
+10: Comms -> Comm ; Comms
+11: Comm -> skip
+12: Comm -> { Comms }
+13: Comm -> TkIdentifier = Expr
+14: Comm -> read ( TkIdentifier )
+15: Comm -> write ( Expr )
+16: Comm -> if Expr then Comm else Comm
+17: Comm -> while Expr Comm
+18: Comm -> assert Expr
+19: Expr -> OrExpr
+20: OrExpr -> OrExpr || AndExpr
+21: OrExpr -> AndExpr
+22: AndExpr -> AndExpr && EqNeqExpr
+23: AndExpr -> EqNeqExpr
+24: EqNeqExpr -> EqNeqExpr == CompExpr
+25: EqNeqExpr -> EqNeqExpr != CompExpr
+26: EqNeqExpr -> CompExpr
+27: CompExpr -> CompExpr < AdditiveExpr
+28: CompExpr -> CompExpr <= AdditiveExpr
+29: CompExpr -> CompExpr > AdditiveExpr
+30: CompExpr -> CompExpr >= AdditiveExpr
+31: CompExpr -> AdditiveExpr
+32: AdditiveExpr -> AdditiveExpr + MultiplicativeExpr
+33: AdditiveExpr -> AdditiveExpr - MultiplicativeExpr
+34: AdditiveExpr -> MultiplicativeExpr
+35: MultiplicativeExpr -> MultiplicativeExpr * UnaryExpr
+36: MultiplicativeExpr -> MultiplicativeExpr / UnaryExpr
+37: MultiplicativeExpr -> MultiplicativeExpr % UnaryExpr
+38: MultiplicativeExpr -> UnaryExpr
+39: UnaryExpr -> - Primary
+40: UnaryExpr -> ! Primary
+41: UnaryExpr -> Primary
+42: Primary -> TkCInt
+43: Primary -> TkCBool
+44: Primary -> TkIdentifier
+45: Primary -> ( Expr )

@@ -32,8 +32,9 @@ symExec prog = do
 
       commToZ3 scope comm
       Z3.solverCheckAndGetModel >>= \case
-        (Z3.Sat, Just model) -> Z3.modelToString model
-        (result, _)          -> return $ "Failed: " ++ show result
+        (Z3.Sat, Just model) -> do s <- Z3.modelToString model
+                                   return ("Failed to verify:\n" ++ s)
+        (result, _)          -> return $ "Successfully verified"
   where runZ3 = Z3.evalZ3With (Just Z3.QF_BV) opts
 
 

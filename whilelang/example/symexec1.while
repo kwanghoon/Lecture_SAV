@@ -1,0 +1,10 @@
+int x;
+int y;
+
+read(x);
+y = 10;
+
+if (x > 0) then y = y + 1
+else y = y - 1;
+
+assert ( y == 11 || y == 9)
