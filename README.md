@@ -95,4 +95,4 @@
 - 각 해당 발표 자료 참고
 
 ### 만든이
- - [전남대학교 소프트웨어공학과 최광훈](https://kwanghoon.github.io)
+ - [전남대학교 최광훈](https://kwanghoon.github.io)
