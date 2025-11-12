@@ -21,7 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- yapb >= 0.2.6
+- yapb >= 0.2.7
 - containers
 - z3 >= 408.2
 - json           >= 0.10 && < 0.11
