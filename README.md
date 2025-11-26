@@ -8,6 +8,9 @@
  - WHILE 언어에 대한 각 기법을 구현 (Haskell 사용)
  - 각 분석 기법을 활용한 오픈소스 소프트웨어를 소개
 
+### 강의 노트
+  - [강의노트](https://kwanghoon.github.io/paper/프로그램_분석_강의_노트.pdf)
+
 ### 목차
 - [소프트웨어 분석 개요](https://docs.google.com/presentation/d/1sPgADP18a_4HIS__g8GoYUSFQcxB3hk8ljlBNPkVqWQ/edit?usp=sharing)
 
