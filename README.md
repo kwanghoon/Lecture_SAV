@@ -71,6 +71,7 @@
     * [z3-4.8.12 버전](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.12)을 다운로드
     * D:\z3-4.8.12-x64-win 디렉토리 아래 bin에 라이브러리, include에 헤더 파일이 있다고 가정하고,
        * stack build --extra-include-dirs=D:\z3-4.8.12-x64-win\include --extra-lib-dirs=D:\z3-4.8.12-x64-win\bin 
+    * $env:PATH = "D:\z3-4.8.12-x64-win\bin;" + $env:PATH; stack build; stack run whilelang-exe -- --egraph .\example\opt3.while; Write-Output "EXIT=$LASTEXITCODE"
 
 ```
  $ git clone https://github.com/kwanghoon/Lecture_SAV

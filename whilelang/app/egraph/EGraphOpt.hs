@@ -9,8 +9,10 @@ module EGraphOpt
   ) where
 
 import Expr
+import Dataflow (isLoopInvariantCond, useExpr, defComm)
 import qualified Data.Set as S
-import Data.List (minimumBy)
+import qualified Data.Map as M
+import Data.List (minimumBy, maximumBy)
 import Data.Ord (comparing)
 
 --------------------------------------------------------------------------------
@@ -20,7 +22,8 @@ import Data.Ord (comparing)
 -- | Optimize every expression inside a program.
 optimizeProg :: Prog -> Prog
 optimizeProg (Prog decls comms) =
-  Prog decls (map optimizeComm comms)
+  let (decls', comms') = hoistInvariantSubexprsProg decls comms
+  in Prog decls' (map optimizeComm comms')
 
 -- | Optimize one command by equality saturation-style search.
 optimizeComm :: Comm -> Comm
@@ -31,6 +34,224 @@ optimizeComm comm =
 optimizeExpr :: Expr -> Expr
 optimizeExpr expr =
   extractBest (saturate defaultFuel expr)
+
+-- | Program-level pass that hoists loop-invariant subexpressions used in
+-- while guards into preheader assignments.
+hoistInvariantSubexprsProg :: Decls -> Comms -> (Decls, Comms)
+hoistInvariantSubexprsProg decls comms =
+  let tyEnv0 = M.fromList [ (v, ty) | (ty, v) <- decls ]
+      used0 = S.fromList (map snd decls)
+      (extraDeclsRev, _, _, commsRev) =
+        foldl
+          (\(extras, tyEnv, used, acc) comm ->
+             let (extras', tyEnv', used', comm') =
+                   hoistInvariantSubexprsComm tyEnv used comm
+             in (extras' ++ extras, tyEnv', used', comm' : acc))
+          ([], tyEnv0, used0, [])
+          comms
+  in (decls ++ reverse extraDeclsRev, reverse commsRev)
+
+hoistInvariantSubexprsComm
+  :: M.Map VarName Type
+  -> S.Set VarName
+  -> Comm
+  -> (Decls, M.Map VarName Type, S.Set VarName, Comm)
+hoistInvariantSubexprsComm tyEnv used CSkip =
+  ([], tyEnv, used, CSkip)
+
+hoistInvariantSubexprsComm tyEnv used (CSeq c1 c2) =
+  let (d1, tyEnv1, used1, c1') = hoistInvariantSubexprsComm tyEnv used c1
+      (d2, tyEnv2, used2, c2') = hoistInvariantSubexprsComm tyEnv1 used1 c2
+  in (d1 ++ d2, tyEnv2, used2, CSeq c1' c2')
+
+hoistInvariantSubexprsComm tyEnv used (CAssign v e) =
+  ([], tyEnv, used, CAssign v e)
+
+hoistInvariantSubexprsComm tyEnv used (CRead v) =
+  ([], tyEnv, used, CRead v)
+
+hoistInvariantSubexprsComm tyEnv used (CWrite e) =
+  ([], tyEnv, used, CWrite e)
+
+hoistInvariantSubexprsComm tyEnv used (CIf cond c1 c2) =
+  let (d1, tyEnv1, used1, c1') = hoistInvariantSubexprsComm tyEnv used c1
+      (d2, tyEnv2, used2, c2') = hoistInvariantSubexprsComm tyEnv1 used1 c2
+  in (d1 ++ d2, tyEnv2, used2, CIf cond c1' c2')
+
+hoistInvariantSubexprsComm tyEnv used (CWhile cond body) =
+  let (dBody, tyEnv1, used1, body') = hoistInvariantSubexprsComm tyEnv used body
+      defs = defComm body'
+      (preAssigns, cond'', body'', newDecls, tyEnv2, used2) =
+        hoistInvariantExprsFromWhile tyEnv1 used1 defs cond body'
+      hoistedWhile = CWhile cond'' body''
+      hoisted = foldr CSeq hoistedWhile preAssigns
+  in (dBody ++ newDecls, tyEnv2, used2, hoisted)
+
+hoistInvariantSubexprsComm tyEnv used (CAssert e) =
+  ([], tyEnv, used, CAssert e)
+
+hoistInvariantExprsFromWhile
+  :: M.Map VarName Type
+  -> S.Set VarName
+  -> S.Set VarName
+  -> Expr
+  -> Comm
+  -> ([Comm], Expr, Comm, Decls, M.Map VarName Type, S.Set VarName)
+hoistInvariantExprsFromWhile tyEnv used defs cond body =
+  let candidates = collectInvariantCandidates defs cond body
+      step (assigns, condAcc, bodyAcc, declsAcc, tyEnvAcc, usedAcc) invExpr =
+        case inferExprType tyEnvAcc invExpr of
+          Nothing ->
+            (assigns, condAcc, bodyAcc, declsAcc, tyEnvAcc, usedAcc)
+          Just invTy ->
+            let tmpVar = freshInvariantVar usedAcc
+                repl = EVar tmpVar
+                condNext = replaceExpr invExpr repl condAcc
+                bodyNext = replaceExprInComm invExpr repl bodyAcc
+                assignComm = CAssign tmpVar invExpr
+                tyEnvNext = M.insert tmpVar invTy tyEnvAcc
+                usedNext = S.insert tmpVar usedAcc
+            in (assigns ++ [assignComm], condNext, bodyNext, declsAcc ++ [(invTy, tmpVar)], tyEnvNext, usedNext)
+  in foldl step ([], cond, body, [], tyEnv, used) candidates
+
+collectInvariantCandidates :: S.Set VarName -> Expr -> Comm -> [Expr]
+collectInvariantCandidates defs cond body =
+  let condExprs = filter (/= cond) (collectSubexprs cond)
+      bodyExprs = concatMap collectSubexprs (exprsInComm body)
+      allExprs = condExprs ++ bodyExprs
+      invariantExprs = filter isHoistableInvariant allExprs
+      uniqueExprs = uniqExprs invariantExprs
+  in sortByCostDesc uniqueExprs
+  where
+    isHoistableInvariant :: Expr -> Bool
+    isHoistableInvariant (ECst _) = False
+    isHoistableInvariant (EVar _) = False
+    isHoistableInvariant e =
+      S.null (S.intersection (useExpr e) defs)
+
+collectSubexprs :: Expr -> [Expr]
+collectSubexprs e =
+  let children = case e of
+        EBinOp _ e1 e2 -> collectSubexprs e1 ++ collectSubexprs e2
+        EUnaryOp _ e1  -> collectSubexprs e1
+        _              -> []
+  in e : children
+
+exprsInComm :: Comm -> [Expr]
+exprsInComm CSkip =
+  []
+
+exprsInComm (CSeq c1 c2) =
+  exprsInComm c1 ++ exprsInComm c2
+
+exprsInComm (CAssign _ e) =
+  [e]
+
+exprsInComm (CRead _) =
+  []
+
+exprsInComm (CWrite e) =
+  [e]
+
+exprsInComm (CIf cond c1 c2) =
+  cond : (exprsInComm c1 ++ exprsInComm c2)
+
+exprsInComm (CWhile cond c) =
+  cond : exprsInComm c
+
+exprsInComm (CAssert e) =
+  [e]
+
+uniqExprs :: [Expr] -> [Expr]
+uniqExprs =
+  foldl
+    (\acc e -> if e `elem` acc then acc else acc ++ [e])
+    []
+
+sortByCostDesc :: [Expr] -> [Expr]
+sortByCostDesc =
+  reverse . sortByCostAsc
+
+sortByCostAsc :: [Expr] -> [Expr]
+sortByCostAsc =
+  foldr insertByCost []
+  where
+    insertByCost e [] = [e]
+    insertByCost e (x:xs)
+      | exprCost e <= exprCost x = e : x : xs
+      | otherwise = x : insertByCost e xs
+
+replaceExpr :: Expr -> Expr -> Expr -> Expr
+replaceExpr target repl e
+  | e == target = repl
+  | otherwise =
+      case e of
+        EBinOp op e1 e2 -> EBinOp op (replaceExpr target repl e1) (replaceExpr target repl e2)
+        EUnaryOp op e1  -> EUnaryOp op (replaceExpr target repl e1)
+        _               -> e
+
+replaceExprInComm :: Expr -> Expr -> Comm -> Comm
+replaceExprInComm _ _ CSkip =
+  CSkip
+
+replaceExprInComm target repl (CSeq c1 c2) =
+  CSeq (replaceExprInComm target repl c1) (replaceExprInComm target repl c2)
+
+replaceExprInComm target repl (CAssign v e) =
+  CAssign v (replaceExpr target repl e)
+
+replaceExprInComm _ _ (CRead v) =
+  CRead v
+
+replaceExprInComm target repl (CWrite e) =
+  CWrite (replaceExpr target repl e)
+
+replaceExprInComm target repl (CIf cond c1 c2) =
+  CIf (replaceExpr target repl cond)
+      (replaceExprInComm target repl c1)
+      (replaceExprInComm target repl c2)
+
+replaceExprInComm target repl (CWhile cond c) =
+  CWhile (replaceExpr target repl cond) (replaceExprInComm target repl c)
+
+replaceExprInComm target repl (CAssert e) =
+  CAssert (replaceExpr target repl e)
+
+freshInvariantVar :: S.Set VarName -> VarName
+freshInvariantVar used =
+  head [ candidate | i <- [0 :: Int ..], let candidate = "__li" ++ show i, S.notMember candidate used ]
+
+inferExprType :: M.Map VarName Type -> Expr -> Maybe Type
+inferExprType _ (ECst (CInt _)) =
+  Just TyInt
+
+inferExprType _ (ECst (CBool _)) =
+  Just TyBool
+
+inferExprType tyEnv (EVar v) =
+  M.lookup v tyEnv
+
+inferExprType tyEnv (EUnaryOp OpNot e) =
+  case inferExprType tyEnv e of
+    Just TyBool -> Just TyBool
+    _           -> Nothing
+
+inferExprType _ (EUnaryOp _ _) =
+  Nothing
+
+inferExprType tyEnv (EBinOp op e1 e2) =
+  case (op, inferExprType tyEnv e1, inferExprType tyEnv e2) of
+    (OpAdd, Just TyInt, Just TyInt)      -> Just TyInt
+    (OpSub, Just TyInt, Just TyInt)      -> Just TyInt
+    (OpMul, Just TyInt, Just TyInt)      -> Just TyInt
+    (OpDiv, Just TyInt, Just TyInt)      -> Just TyInt
+    (OpMod, Just TyInt, Just TyInt)      -> Just TyInt
+    (OpLessThan, Just TyInt, Just TyInt) -> Just TyBool
+    (OpEqual, Just TyInt, Just TyInt)    -> Just TyBool
+    (OpEqual, Just TyBool, Just TyBool)  -> Just TyBool
+    (OpAnd, Just TyBool, Just TyBool)    -> Just TyBool
+    (OpOr, Just TyBool, Just TyBool)     -> Just TyBool
+    _                                    -> Nothing
 
 --------------------------------------------------------------------------------
 -- A very small e-graph-like saturation engine
@@ -310,7 +531,11 @@ guardSpecializationRules (CWhile cond body) =
       specialized = case cond' of
         ECst (CBool False) -> [CSkip]
         _                  -> []
-  in base ++ specialized
+      invariantHoist =
+        if shouldHoistInvariantGuard cond' body
+          then [CIf cond' (CWhile (ECst (CBool True)) body) CSkip]
+          else []
+  in base ++ specialized ++ invariantHoist
 
 guardSpecializationRules (CAssert cond) =
   let cond' = optimizeExpr cond
@@ -322,6 +547,13 @@ guardSpecializationRules (CAssert cond) =
 
 guardSpecializationRules _ =
   []
+
+shouldHoistInvariantGuard :: Expr -> Comm -> Bool
+shouldHoistInvariantGuard (ECst _) _ =
+  False
+
+shouldHoistInvariantGuard cond body =
+  isLoopInvariantCond cond body
 
 isAssociative :: Op -> Bool
 isAssociative OpAdd = True
@@ -457,7 +689,15 @@ commCost (CIf e c1 c2) =
   2 + exprCost e + commCost c1 + commCost c2
 
 commCost (CWhile e c) =
-  3 + exprCost e + commCost c
+  3 + exprCost e + commCost c + loopGuardRepeatPenalty e
+
+loopGuardRepeatPenalty :: Expr -> Int
+loopGuardRepeatPenalty (ECst _) =
+  0
+
+-- Non-constant guards are evaluated on each iteration in the source form.
+loopGuardRepeatPenalty _ =
+  6
 
 --------------------------------------------------------------------------------
 -- Ord instances

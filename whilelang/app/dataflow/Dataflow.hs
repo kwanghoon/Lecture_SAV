@@ -8,6 +8,56 @@ import Expr
 import Data.List
 import Debug.Trace
 
+--------------------------------------------------------------------------------
+-- Use/Def utilities for optimization
+--------------------------------------------------------------------------------
+
+-- | Variables used by an expression.
+useExpr :: Expr -> Set.Set VarName
+useExpr (ECst _) =
+  Set.empty
+
+useExpr (EVar v) =
+  Set.singleton v
+
+useExpr (EBinOp _ e1 e2) =
+  Set.union (useExpr e1) (useExpr e2)
+
+useExpr (EUnaryOp _ e) =
+  useExpr e
+
+-- | Variables definitely defined (assigned/read) by a command.
+defComm :: Comm -> Set.Set VarName
+defComm CSkip =
+  Set.empty
+
+defComm (CSeq c1 c2) =
+  Set.union (defComm c1) (defComm c2)
+
+defComm (CAssign v _) =
+  Set.singleton v
+
+defComm (CRead v) =
+  Set.singleton v
+
+defComm (CWrite _) =
+  Set.empty
+
+defComm (CIf _ c1 c2) =
+  Set.union (defComm c1) (defComm c2)
+
+defComm (CWhile _ c) =
+  defComm c
+
+defComm (CAssert _) =
+  Set.empty
+
+-- | A while condition is loop-invariant when the loop body does not define
+--   any variable used by the condition.
+isLoopInvariantCond :: Expr -> Comm -> Bool
+isLoopInvariantCond cond body =
+  Set.null (Set.intersection (useExpr cond) (defComm body))
+
 --
 type Label = Int
 
