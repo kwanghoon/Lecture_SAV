@@ -23,7 +23,7 @@ type VarName  = String
 data Const =
     CInt  Int
   | CBool Bool
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 -- instance Show Const where
 --   show (CInt n) = show n
@@ -38,7 +38,7 @@ instance ToJSON Const where
 data Type =
     TyInt
   | TyBool
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 -- instance Show Type where
 --   show TyInt = "int"
@@ -60,7 +60,7 @@ data Op =
   | OpAnd
   | OpOr
   | OpNot
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 -- instance Show Op where
 --   show OpAdd = "+"
@@ -92,7 +92,7 @@ data Expr =
   | EVar   VarName
   | EBinOp Op Expr Expr
   | EUnaryOp Op Expr
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 instance ToJSON Expr where
   toJSON (ECst c) = object [fromString "ECst" .= c]
@@ -110,7 +110,7 @@ data Comm =
   | CIf Expr Comm Comm
   | CWhile Expr Comm
   | CAssert Expr
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 instance ToJSON Comm where
   toJSON CSkip = object [fromString "CSkip" .= ()]
@@ -124,7 +124,7 @@ instance ToJSON Comm where
 
 -- Program
 data Prog = Prog { progDecls :: Decls, progComms :: Comms }
-  deriving (Show, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 instance ToJSON Prog where
   toJSON (Prog decls comms) = object [fromString "Prog" .= (decls, comms)]  

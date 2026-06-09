@@ -11,6 +11,7 @@ import Interp (interp)
 import Typecheck (typecheck)
 import Dataflow (dataflow, printLabeledComm)
 import SymExec
+import EGraphOpt (optimizeProg)
 
 import Data.Char (isDigit)
 
@@ -134,6 +135,23 @@ doSymbolic fileName = do
   typecheck prog
   
   symExec prog
+
+-- The e-graph optimizer
+doEgraphOpt fileName = do
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
+  typecheck prog
+
+  let optimized = optimizeProg prog
+  putStrLn . show $ optimized
 
 --
 --

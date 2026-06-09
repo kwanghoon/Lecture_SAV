@@ -11,7 +11,8 @@ import System.Environment (getArgs, withArgs)
 
 main :: IO ()
 main =
- do args <- getArgs
+ do putStrLn "--- WHILE ---"
+    args <- getArgs
     _main doRun args
 
 _main f [] = return ()
@@ -35,6 +36,7 @@ cmdList =
    ("--typecheck", doTypecheck),
    ("--dataflow", doAnalysis),
    ("--symexec", doSymbolic),
+   ("--egraph", doEgraphOpt),
    ("--json", doJson)
  ]
 

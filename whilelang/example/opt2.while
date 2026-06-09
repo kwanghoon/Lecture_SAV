@@ -1,0 +1,7 @@
+int x;
+int y;
+int z;
+
+x = 1;
+z = 2;
+y = x * 1 + 0 * z
