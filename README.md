@@ -41,6 +41,12 @@
      - [FBInfer](https://fbinfer.com)
      - [CodeQL](https://codeql.github.com/docs/)
 
+- [최적화 변환]()
+  * WHILE
+     - [E-graph 최적화](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/egraph/EGraphOpt.hs)
+  * 오픈소스 소프트웨어 
+     - [egg](https://egraphs-good.github.io/)
+
 - [기호 실행](https://docs.google.com/presentation/d/1_Z9-xdhx04eDvcfdLUW8Jj8_2WS9t5YJS9AO8jYdLYo/edit?usp=sharing)
 
   * WHILE
@@ -74,6 +80,7 @@
  $ stack exec -- whilelang-exe --parse ./example/while2.while
  $ stack exec -- whilelang-exe --typecheck ./example/while2.while
  $ stack exec -- whilelang-exe --dataflow ./example/while2.while
+ $ stack exec -- whilelang-exe --egraph ./example/while2.while
  $ stack exec -- whilelang-exe --symexec ./example/while2.while
  $ stack exec -- whilelang-exe --json ./example/while2.while
 ```
@@ -89,6 +96,7 @@
  ghci> doRun srcFile
  ghci> doTypecheck srcFile
  ghci> doAnalysis srcFile
+ ghci> doEgraphOpt srcFile
  ghci> doSymbolic srcFile
  ghci> doJson srcFile
 ```
