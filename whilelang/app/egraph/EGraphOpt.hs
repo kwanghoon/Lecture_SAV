@@ -22,31 +22,10 @@ optimizeProg :: Prog -> Prog
 optimizeProg (Prog decls comms) =
   Prog decls (map optimizeComm comms)
 
--- | Optimize expressions inside commands.
+-- | Optimize one command by equality saturation-style search.
 optimizeComm :: Comm -> Comm
-optimizeComm CSkip =
-  CSkip
-
-optimizeComm (CSeq c1 c2) =
-  CSeq (optimizeComm c1) (optimizeComm c2)
-
-optimizeComm (CAssign v e) =
-  CAssign v (optimizeExpr e)
-
-optimizeComm (CRead v) =
-  CRead v
-
-optimizeComm (CWrite e) =
-  CWrite (optimizeExpr e)
-
-optimizeComm (CIf e c1 c2) =
-  CIf (optimizeExpr e) (optimizeComm c1) (optimizeComm c2)
-
-optimizeComm (CWhile e c) =
-  CWhile (optimizeExpr e) (optimizeComm c)
-
-optimizeComm (CAssert e) =
-  CAssert (optimizeExpr e)
+optimizeComm comm =
+  extractBestComm (saturateComm defaultCommFuel comm)
 
 -- | Optimize one expression by equality saturation-style search.
 optimizeExpr :: Expr -> Expr
@@ -65,6 +44,10 @@ type EClass = S.Set Expr
 -- Real e-graphs use hash-consing, congruence closure, rebuilding, etc.
 defaultFuel :: Int
 defaultFuel = 8
+
+-- | Maximum number of command saturation rounds.
+defaultCommFuel :: Int
+defaultCommFuel = 8
 
 -- | Repeatedly add equivalent expressions.
 saturate :: Int -> Expr -> EClass
@@ -88,6 +71,34 @@ closeOneStep cls =
     [ cls
     , S.fromList (concatMap rewrites (S.toList cls))
     , S.fromList (concatMap congruenceExpansions (S.toList cls))
+    ]
+
+--------------------------------------------------------------------------------
+-- Command saturation engine
+--------------------------------------------------------------------------------
+
+type CClass = S.Set Comm
+
+-- | Repeatedly add equivalent commands.
+saturateComm :: Int -> Comm -> CClass
+saturateComm fuel comm =
+  go fuel (S.singleton comm)
+  where
+    go :: Int -> CClass -> CClass
+    go 0 cls = cls
+    go n cls =
+      let cls' = closeOneStepComm cls
+      in if cls' == cls
+           then cls
+           else go (n - 1) cls'
+
+-- | One command saturation step.
+closeOneStepComm :: CClass -> CClass
+closeOneStepComm cls =
+  S.unions
+    [ cls
+    , S.fromList (concatMap commRewrites (S.toList cls))
+    , S.fromList (concatMap commCongruenceExpansions (S.toList cls))
     ]
 
 --------------------------------------------------------------------------------
@@ -252,6 +263,66 @@ associativityRules (EBinOp op a (EBinOp op' b c))
 associativityRules _ =
   []
 
+--------------------------------------------------------------------------------
+-- Command rewrite rules
+--------------------------------------------------------------------------------
+
+commRewrites :: Comm -> [Comm]
+commRewrites c =
+  structuralCommRules c ++
+  guardSpecializationRules c
+
+-- | Structural rules that preserve command semantics.
+structuralCommRules :: Comm -> [Comm]
+structuralCommRules (CSeq CSkip c2) =
+  [c2]
+
+structuralCommRules (CSeq c1 CSkip) =
+  [c1]
+
+structuralCommRules (CSeq (CSeq c1 c2) c3) =
+  [CSeq c1 (CSeq c2 c3)]
+
+structuralCommRules (CSeq c1 (CSeq c2 c3)) =
+  [CSeq (CSeq c1 c2) c3]
+
+structuralCommRules (CIf _ c1 c2)
+  | c1 == c2 =
+      [c1]
+
+structuralCommRules _ =
+  []
+
+-- | Branch/loop/assert rules driven by simplified guard expressions.
+guardSpecializationRules :: Comm -> [Comm]
+guardSpecializationRules (CIf cond c1 c2) =
+  let cond' = optimizeExpr cond
+      base = [CIf cond' c1 c2 | cond' /= cond]
+      specialized = case cond' of
+        ECst (CBool True)  -> [c1]
+        ECst (CBool False) -> [c2]
+        _                  -> []
+  in base ++ specialized
+
+guardSpecializationRules (CWhile cond body) =
+  let cond' = optimizeExpr cond
+      base = [CWhile cond' body | cond' /= cond]
+      specialized = case cond' of
+        ECst (CBool False) -> [CSkip]
+        _                  -> []
+  in base ++ specialized
+
+guardSpecializationRules (CAssert cond) =
+  let cond' = optimizeExpr cond
+      base = [CAssert cond' | cond' /= cond]
+      specialized = case cond' of
+        ECst (CBool True) -> [CSkip]
+        _                 -> []
+  in base ++ specialized
+
+guardSpecializationRules _ =
+  []
+
 isAssociative :: Op -> Bool
 isAssociative OpAdd = True
 isAssociative OpMul = True
@@ -284,6 +355,39 @@ congruenceExpansions (EUnaryOp op e) =
 congruenceExpansions _ =
   []
 
+-- | Congruence-like expansion for commands.
+commCongruenceExpansions :: Comm -> [Comm]
+commCongruenceExpansions CSkip =
+  []
+
+commCongruenceExpansions (CAssign v e) =
+  [ CAssign v e' | e' <- S.toList (saturate 3 e) ]
+
+commCongruenceExpansions (CRead v) =
+  [CRead v]
+
+commCongruenceExpansions (CWrite e) =
+  [ CWrite e' | e' <- S.toList (saturate 3 e) ]
+
+commCongruenceExpansions (CAssert e) =
+  [ CAssert e' | e' <- S.toList (saturate 3 e) ]
+
+commCongruenceExpansions (CSeq c1 c2) =
+  let c1s = S.toList (saturateComm 3 c1)
+      c2s = S.toList (saturateComm 3 c2)
+  in [ CSeq c1' c2' | c1' <- c1s, c2' <- c2s ]
+
+commCongruenceExpansions (CIf e c1 c2) =
+  let es = S.toList (saturate 3 e)
+      c1s = S.toList (saturateComm 3 c1)
+      c2s = S.toList (saturateComm 3 c2)
+  in [ CIf e' c1' c2' | e' <- es, c1' <- c1s, c2' <- c2s ]
+
+commCongruenceExpansions (CWhile e c) =
+  let es = S.toList (saturate 3 e)
+      cs = S.toList (saturateComm 3 c)
+  in [ CWhile e' c' | e' <- es, c' <- cs ]
+
 --------------------------------------------------------------------------------
 -- Extraction
 --------------------------------------------------------------------------------
@@ -292,6 +396,11 @@ congruenceExpansions _ =
 extractBest :: EClass -> Expr
 extractBest cls =
   minimumBy (comparing exprCost) (S.toList cls)
+
+-- | Pick the lowest-cost command from an equivalence class.
+extractBestComm :: CClass -> Comm
+extractBestComm cls =
+  minimumBy (comparing commCost) (S.toList cls)
 
 -- | Simple static cost model.
 --
@@ -321,6 +430,34 @@ opCost OpNot      = 1
 opCost OpMul      = 3
 opCost OpDiv      = 5
 opCost OpMod      = 5
+
+-- | Command-level cost model.
+--
+-- Prefers fewer/simpler commands and cheaper guards/expressions.
+commCost :: Comm -> Int
+commCost CSkip =
+  1
+
+commCost (CAssign _ e) =
+  2 + exprCost e
+
+commCost (CRead _) =
+  2
+
+commCost (CWrite e) =
+  2 + exprCost e
+
+commCost (CAssert e) =
+  2 + exprCost e
+
+commCost (CSeq c1 c2) =
+  1 + commCost c1 + commCost c2
+
+commCost (CIf e c1 c2) =
+  2 + exprCost e + commCost c1 + commCost c2
+
+commCost (CWhile e c) =
+  3 + exprCost e + commCost c
 
 --------------------------------------------------------------------------------
 -- Ord instances
