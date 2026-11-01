@@ -10,7 +10,7 @@ import WhileMonad
 import Interp (interp)
 import Typecheck (typecheck)
 import Dataflow (dataflow, printLabeledComm)
-import Sign(analyzeSign)
+import Sign(analyzeSign, showAState)
 import SymExec
 import EGraphOpt (optimizeProg)
 
@@ -136,7 +136,7 @@ doSign fileName = do
   typecheck prog
 
   let astate = analyzeSign prog
-  print (show astate)
+  putStrLn("At the end: " ++ showAState astate)
   
   return ()  
 

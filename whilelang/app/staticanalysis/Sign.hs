@@ -11,13 +11,16 @@ module Sign
   , lookupSign, updateSign, joinState, meetState
   , evalA, evalB, assumeTrue, assumeFalse
   , analyze, analyzeProg, analyzeComm, loopTrace, example
-  , analyzeSign
+  , analyzeSign, showAState
   ) where
 
 import qualified Data.Map.Strict as Map
 import Data.Bits ((.&.), (.|.))
 import Data.List (foldl')
+import Data.Map (toList)
 import Expr
+
+import Debug.Trace
 
 -- 1. Sign domain -------------------------------------------------------------
 
@@ -161,6 +164,10 @@ refineVar x desired (Just ps) =
     NONE -> Nothing
     s    -> Just (updateSign x s ps)
 
+showAState :: AState -> String
+showAState Nothing = "[(_,NONE)]"
+showAState (Just m) = show (toList m ++ [("_",ANY)])
+
 -- 3. Expressions -------------------------------------------------------------
 
 evalA :: Expr -> PState -> Sign
@@ -299,7 +306,8 @@ analyze (CIf cond yes no) st =
             (analyze no  (assumeFalse cond st))
 analyze (CWhile cond body) st =
   let headState = loopFix cond body st
-  in assumeFalse cond headState
+      st' = assumeFalse cond headState
+  in trace ("while: " ++ showAState st') st'
 
 -- H(head) = entry JOIN analyze(body, assumeTrue(cond, head)).
 -- Since the state lattice has finite height, iteration from entry stabilizes.
