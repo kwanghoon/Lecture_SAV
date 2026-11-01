@@ -59,6 +59,7 @@ executable whilelang-exe
       WhileMonad
       Typecheck
       Dataflow
+      Sign
       SymExec
       EGraphOpt
       Paths_whilelang
@@ -67,7 +68,7 @@ executable whilelang-exe
       app/ast
       app/interp
       app/typecheck
-      app/dataflow
+      app/staticanalysis
       app/symexec
       app/egraph
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -99,6 +100,7 @@ test-suite whilelang-test
       WhileMonad
       Typecheck
       Dataflow
+      Sign
       SymExec
       EGraphOpt
       Paths_whilelang
@@ -108,7 +110,7 @@ test-suite whilelang-test
       app/ast
       app/interp
       app/typecheck
-      app/dataflow
+      app/staticanalysis
       app/symexec
       app/egraph
   ghc-options: -threaded -rtsopts -with-rtsopts=-N

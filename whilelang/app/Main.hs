@@ -35,6 +35,7 @@ cmdList =
    ("--parse", doParsing),
    ("--typecheck", doTypecheck),
    ("--dataflow", doAnalysis),
+   ("--sign", doSign),
    ("--symexec", doSymbolic),
    ("--egraph", doEgraphOpt),
    ("--json", doJson)

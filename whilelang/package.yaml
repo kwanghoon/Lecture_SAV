@@ -42,7 +42,7 @@ executables:
     - app/ast
     - app/interp
     - app/typecheck
-    - app/dataflow
+    - app/staticanalysis
     - app/symexec
     - app/egraph
     ghc-options:
@@ -61,7 +61,7 @@ tests:
     - app/ast
     - app/interp
     - app/typecheck
-    - app/dataflow
+    - app/staticanalysis
     - app/symexec
     - app/egraph
     ghc-options:

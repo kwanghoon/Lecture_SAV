@@ -10,6 +10,7 @@ import WhileMonad
 import Interp (interp)
 import Typecheck (typecheck)
 import Dataflow (dataflow, printLabeledComm)
+import Sign(analyzeSign)
 import SymExec
 import EGraphOpt (optimizeProg)
 
@@ -115,7 +116,29 @@ doAnalysis fileName = do
   return ()
   
   -- putStrLn . show $ labeledprog
+
+-- The data flow analyzer
+doSign fileName = do 
+  let verbose = False
+  text <- readFile fileName
+  let debugFlag = False
+
+  astprog <-
+    parsing debugFlag                        -- parser converting a text-based program
+       parserSpec ((), 1, 1, text)           -- into a program in abstract syntax tree (Expr)
+       (aLexer lexerSpec)
+       (fromToken (endOfToken lexerSpec))
+
+  let prog = fromASTProg astprog
   
+  putStrLn . show $ prog
+
+  typecheck prog
+
+  let astate = analyzeSign prog
+  print (show astate)
+  
+  return ()  
 
 doSymbolic fileName = do
   let verbose = False
