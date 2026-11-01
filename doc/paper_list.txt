@@ -1,0 +1,225 @@
+
+1. 구문 분석과 프로그램 구조 표현
+
+Foundational  논문: D. E. Knuth, “On the Translation of Languages from Left to Right,” Information and Control, 1965.  
+ : LR(k)의 출발점. 현재 강의의 LR parsing과 직접 연결
+
+Foundational  논문: Jay Earley, “An Efficient Context-Free Parsing Algorithm,” CACM, 1970.  
+ :  일반 CFG parsing, LR과 비교하기 좋음
+
+Foundational  논문: T. Wagner and S. Graham, “Efficient and Flexible Incremental Parsing,” TOPLAS, 1998.
+ : incremental parsing의 대표 고전
+
+Representative  논문: F. DeRemer and T. Pennello, “Efficient Computation of LALR(1) Look-Ahead Sets,” TOPLAS, 1982.  
+ : yacc/bison 계열 parser 기술의 배경
+
+Recent  논문: Vogel et al., “Codebase-Memory: Tree-Sitter-Based Knowledge Graphs for LLM Code Exploration via MCP,” 2026.  
+ : Tree-sitter → 구조화된 코드 → LLM이라는 최신 연결
+
+Knuth 논문은 LR(k)를 처음 체계적으로 정의한 논문이고, DeRemer–Pennello는 LALR(1)의 lookahead 계산을 다룹니다. ScienceDirect: https://www.sciencedirect.com/science/article/pii/S0019995865904262?utm_source=chatgpt.com
+
+
+2. 의미 분석·타입 시스템·Information Flow Control
+
+현재 Volpano–Irvine–Smith와 Sabelfeld–Myers가 있으므로, 그 앞에 Denning을 반드시 넣는 것을 권합니다.
+
+Foundational  논문: Dorothy E. Denning, “A Lattice Model of Secure Information Flow,” CACM, 1976.  
+ : 보안 lattice와 정보 흐름 분석의 출발점
+
+Foundational  논문: Volpano, Irvine, Smith, “A Sound Type System for Secure Flow Analysis,” JCS, 1996.
+ : IFC를 type system으로 공식화, noninterference
+
+Survey/Classic  논문: Sabelfeld and Myers, “Language-Based Information-Flow Security,” IEEE JSAC, 2003.  
+ : IFC 분야 전체를 조망하는 고전적 survey
+
+Advanced  논문: 동적 IFC의 fine-grained/coarse-grained calculi를 다루는 논문 
+ : 이후 강의에서 배운 operational semantics와 연결
+
+Denning은 security class를 lattice로 구성하여 프로그램의 정보 흐름을 분석하는 틀을 제시했고, Volpano 등은 이를 type system과 noninterference의 soundness 문제로 연결했습니다. DOI: https://doi.org/10.1145/360051.360056?utm_source=chatgpt.com
+
+
+3. 정적 분석의 원리와 보안 취약점 분석
+
+
+Foundational  논문: Gary Kildall, “A Unified Approach to Global Program Optimization,” POPL 1973.  
+ : data-flow equation, fixed point의 고전
+
+Foundational  논문: Patrick Cousot and Radhia Cousot, “Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints,” POPL 1977. 
+ : 추상 해석의 원전
+
+Foundational  논문: Reps, Horwitz, Sagiv, “Precise Interprocedural Dataflow Analysis via Graph Reachability,” POPL 1995.  
+ : IFDS, interprocedural analysis
+
+Security  논문: Livshits and Lam, “Finding Security Vulnerabilities in Java Applications with Static Analysis,” USENIX Security 2005. 
+ : source–sink/taint 기반 보안 분석의 대표 사례
+
+Security  논문: Yamaguchi et al., “Modeling and Discovering Vulnerabilities with Code Property Graphs,” IEEE S&P 2014.  
+ : AST+CFG+PDG → CPG
+
+Representative  논문: Avgustinov et al., “QL: Object-oriented Queries on Relational Data,” ECOOP 2016. 
+ : CodeQL의 언어적 기반
+
+Representative  논문: Wi et al., “HiddenCPG,” WWW 2022.
+ : CPG의 대규모 취약 코드 검색 응용
+
+Kildall → Cousot → Reps → Livshits → Yamaguchi 순서가 자료흐름 분석 → 추상해석 → 절차간 분석 → taint security → CPG라는 좋은 연구사 흐름을 만듭니다. Kildall은 일반적인 global data-flow algorithm을 제시했고, Cousot의 논문은 현재 강의에서 다룬 lattice와 least fixpoint 관점을 직접적으로 일반화합니다. DOI: https://doi.org/10.1145/512927.512945?utm_source=chatgpt.com Reps 등은 interprocedural data-flow를 graph reachability로 환원합니다. DOI: https://doi.org/10.1145/199448.199462?utm_source=chatgpt.com
+
+4. LLM 기반 소프트웨어 취약점 분석
+
+Sun et al., “GPTScan: Detecting Logic Vulnerabilities in Smart Contracts by Combining GPT with Program Analysis,” ICSE 2024.  
+ : GPT 후보 추출 + static confirmation
+
+Li, Dutta, Naik, “IRIS: LLM-Assisted Static Analysis for Detecting Security Vulnerabilities,” ICLR 2025.  
+ : LLM이 taint specification 생성 + CodeQL 분석
+
+Lekssays et al., “LLMxCPG: Context-Aware Vulnerability Detection Through Code Property Graph-Guided Large Language Models,” USENIX Security 2025.
+ : CPG slicing + LLM
+
+Sun et al., “LLM4Vuln: A Unified Evaluation Framework for Decoupling and Enhancing LLMs' Vulnerability Reasoning,” 2024.
+ : LLM 자체 reasoning과 외부 knowledge/context 효과를 분리 평가
+
+Li et al., “SV-TrustEval-C: Evaluating Structure and Semantic Reasoning in Large Language Models for Source Code Vulnerability Analysis,” IEEE S&P 2025.
+ : LLM이 실제로 구조/의미를 이해하는지 평가
+
+Yunpeng Xiong, Ting Zhang, “Sifting the Noise: A Comparative Study of LLM Agents in Vulnerability False Positive Filtering,” ISSTA 2026.  
+ : SAST false positive triage에 agent 적용
+
+Wang et al., “QLCoder: A Query Synthesizer for Static Analysis of Security Vulnerabilities,” ICLR 2026.
+ : LLM agent가 CodeQL query 자체를 생성
+
+여기에서 GPTScan → IRIS → LLMxCPG → QLCoder를 하나의 연구 흐름으로 볼 수 있습니다.
+
+GPTScan은 GPT가 이해하기 어려운 부분을 static confirmation으로 보완합니다. conf.researchr.org: https://conf.researchr.org/details/icse-2024/icse-2024-research-track/114/GPTScan-Detecting-Logic-Vulnerabilities-in-Smart-Contracts-by-Combining-GPT-with-Pro?utm_source=chatgpt.com
+IRIS는 이 생각을 whole-repository taint analysis로 확장하여 LLM이 static-analysis specification을 만들어 주도록 합니다. ICLR Proceedings: https://proceedings.iclr.cc/paper_files/paper/2025/hash/582d4e27fa24168f3af1f4582655034b-Abstract-Conference.html?utm_source=chatgpt.com
+LLMxCPG는 반대로 CPG/static analysis가 LLM에게 필요한 문맥을 골라 제공합니다. USENIX: https://www.usenix.org/conference/usenixsecurity25/technical-sessions?utm_source=chatgpt.com
+그리고 2026년 QLCoder는 LLM이 CodeQL 분석 규칙 자체를 합성하는 방향입니다. ICLR Proceedings: https://proceedings.iclr.cc/paper_files/paper/2026/hash/2adf01ab15adde8820622f7f24bd516b-Abstract-Conference.html?utm_source=chatgpt.com
+
+공통 질문: “LLM이 프로그램 분석기를 대체하는가, 아니면 전통적인 프로그램 분석의 specification 작성·context selection·result triage를 보조하는가?”
+
+이 질문 하나만으로 네 논문의 차이를 상당히 잘 비교할 수 있습니다.
+
+
+5. 기호 실행과 Concolic Execution
+
+ King -> KLEE-> Cadar–Sen survey->DART->CUTE
+
+Foundational  논문: James C. King, “Symbolic Execution and Program Testing,” CACM, 1976.
+
+Godefroid, Klarlund, Sen, “DART: Directed Automated Random Testing,” PLDI 2005.
+
+Sen, Marinov, Agha, “CUTE: A Concolic Unit Testing Engine for C,” FSE 2005.
+
+System  논문: Cadar, Dunbar, Engler, “KLEE: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs,” OSDI 2008.
+
+Survey  논문: Cadar and Sen, “Symbolic Execution for Software Testing: Three Decades Later,” CACM 2013.
+
+DART와 CUTE는 concrete execution과 symbolic execution을 결합해 path exploration을 자동화한 대표적인 초기 concolic systems입니다. Open Source Lab: https://osl.cs.illinois.edu/publications/conf/pldi/GodefroidKS05.html?utm_source=chatgpt.com
+
+King vs. KLEE, 또는 DART/CUTE vs. KLEE가 발표하기 좋습니다.
+
+
+6. Automatic Program Repair / 프로그램 변환
+
+현재 목록은 2019년 neural repair 이후에 치우쳐 있습니다. APR의 중요한 고전 세 편을 앞에 추가하기를 권합니다.
+
+Foundational  논문: Le Goues et al., “GenProg: A Generic Method for Automatic Software Repair,” IEEE TSE 2012.
+
+Foundational  논문: Nguyen et al., “SemFix: Program Repair via Semantic Analysis,” ICSE 2013.
+
+Mechtaev, Yi, Roychoudhury, “Angelix: Scalable Multiline Program Patch Synthesis via Symbolic Analysis,” ICSE 2016.
+
+ML transition  논문: Tufano et al., “An Empirical Study on Learning Bug-Fixing Patches in the Wild via Neural Machine Translation,” TOSEM 2019.
+
+LLM Agent  논문: PRISM: A Multi-Team Orchestration of LLM Agents for Automatic Program Repair, RAID 2026.
+
+이 세 고전은 각각 search-based repair → symbolic/semantic repair → scalable symbolic repair로 이어집니다. SemFix는 symbolic execution, constraint solving, program synthesis를 결합하므로 기호 실행 강의와 잘 연결됩니다. pldb: https://pldb.kirancodes.me/p/conf/icse/NguyenQRC13?utm_source=chatgpt.com
+
+6-1. 양자내성 암호전환 (PQC migration)
+
+- Empirical Evaluation of Large Language Models for Migration of Code Fragments to Post-Quantum Cryptography
+ * de Bonrostro, Javier Pallarés, Ana I. González-Tablas, and María Isabel González Vasco. "Empirical Evaluation of Large Language Models for Migration of Code Fragments to Post-Quantum Cryptography." arXiv preprint arXiv:2606.07341 (2026).
+
+- CcPASTpqc: Post Quantum Cryptography Migration of Programs Using Code Language Models
+ * Roisan Wahlang and Kumar Vidhani. 2026. CcPASTpqc: Post Quantum Cryptography Migration of Programs Using Code Language Models. In Proceedings of the 13th ACM IKDD International Conference on Data Science (CODS '25). Association for Computing Machinery, New York, NY, USA, 52–61. https://doi.org/10.1145/3799830.3799836
+
+- Can Coding Agents Migrate to Post-Quantum Cryptography?
+ * Abdulmalik Alquwayfili, "Can Coding Agents Migrate to Post-Quantum Cryptography?", arXiv preprint arXiv:2512.12989v3 (2026)
+
+
+7. 신경망 검증 / 신경망 프로그램 분석
+
+Foundational  논문: Katz et al., “Reluplex: An Efficient SMT Solver for Verifying Deep Neural Networks,” CAV 2017.  
+ : SMT 기반 exact verification
+
+
+Gehr et al., “AI²: Safety and Robustness Certification of Neural Networks with Abstract Interpretation,” IEEE S&P 2018.  
+ : 프로그램의 abstract interpretation → neural network
+
+Zhang et al., “Efficient Neural Network Robustness Certification with General Activation Functions,” NeurIPS 2018.  
+ : CROWN 신경망 검증 알고리즘 
+
+Singh et al., “An Abstract Domain for Certifying Neural Networks,” POPL 2019.  
+ : DeepPoly
+
+Xu et al., “Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond,” NeurIPS 2020. 
+ : Auto-LiRPA
+
+Advanced  논문: Beta-CROWN 계열 논문  강의와 연결: bound propagation + branch-and-bound
+
+ AI²가 가장 좋은 발표 논문 중 하나라고 생각합니다. 고전적인 abstract interpretation을 신경망에 그대로 가져온다는 점 때문에, 앞서 학생들이 배운 static analysis와 후반의 neural-network verification 사이를 아주 자연스럽게 연결합니다. AI² 논문 자체도 이를 핵심 아이디어로 명시합니다. IEEE Xplore: https://ieeexplore.ieee.org/document/8418593?utm_source=chatgpt.com
+
+CROWN은 activation function을 linear/quadratic bounds로 근사하고, Auto-LiRPA는 이러한 LiRPA를 일반 computational graph로 자동화합니다. NeurIPS Papers: https://papers.neurips.cc/paper_files/paper/2018/hash/d04863f100d59b3eb688a11f95b0ae60-Abstract.html?utm_source=chatgpt.com
+
+
+8. LLM 에이전트 보안 — 새로 추가 권장
+
+. 일반적인 LLM jailbreak보다는 agent가 external data·memory·tool을 사용하는 순간 발생하는 프로그램 분석/보안 문제에 초점을 맞추고자 합니다.
+
+Foundational  논문: Greshake et al., “Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection,” 2023.
+ : indirect prompt injection 개념의 대표 초기 논문
+
+Ruan et al., “Identifying the Risks of LM Agents with an LM-Emulated Sandbox,” ICLR 2024.
+ : ToolEmu, agent + tool의 위험 분석
+
+Zhan et al., “InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents,” ACL Findings 2024.
+ : tool-integrated agent의 IPI benchmark
+
+Debenedetti et al., “AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents,” NeurIPS 2024.
+ : 공격·방어를 함께 평가하는 agent benchmark
+
+Zhang et al., “Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents,” ICLR 2025.
+ : prompt, memory, tool 등 agent attack surface를 통합
+
+Greshake → InjecAgent → AgentDojo → ASB 흐름을 추천합니다. 
+
+Greshake 등은 “외부에서 가져온 데이터가 instruction으로 해석되는 것” 자체를 indirect prompt injection이라는 보안 문제로 정식화했습니다. arXiv: https://arxiv.org/abs/2302.12173?utm_source=chatgpt.com InjecAgent는 이를 실제 tool-integrated agents의 1,054개 test case로 benchmark화했고, ACL Anthology: https://aclanthology.org/2024.findings-acl.624/?utm_source=chatgpt.com AgentDojo는 tool에서 읽은 untrusted data가 agent를 hijack하는 상황을 동적으로 평가하도록 만들었습니다. NeurIPS Proceedings: https://proceedings.neurips.cc/paper_files/paper/2024/hash/97091a5177d8dc64b1da8bf3e1f6fb54-Abstract-Datasets_and_Benchmarks_Track.html?utm_source=chatgpt.com ASB는 이 범위를 system prompt, user prompt, tool usage, memory까지 넓힙니다. ICLR Proceedings: https://proceedings.iclr.cc/paper_files/paper/2025/hash/5750f91d8fb9d5c02bd8ad2c3b44456b-Abstract-Conference.html?utm_source=chatgpt.com
+
+agent security를 다음처럼 고전 프로그램 분석 문제와 연결할 수 있습니다.
+ - Tainted external data → LLM reasoning → tool invocation → side effect
+
+즉, taint analysis / information flow control / capability analysis를 LLM agent에 어떻게 다시 적용할 것인가?
+라는 관점으로 발표하면 단순한 “prompt injection 사례 소개”보다 프로그램 분석 과목다운 발표가 됩니다.
+
+[핵심 논문]
+
+1. Knuth 1965 — LR parsing
+2. Denning 1976 — Information flow lattice
+3. Volpano et al. 1996 — Secure-flow type system
+4. Kildall 1973 — Data-flow analysis
+5. Cousot & Cousot 1977 — Abstract interpretation
+6. Reps et al. 1995 — Interprocedural data-flow
+7. Yamaguchi et al. 2014 — Code Property Graph
+8. King 1976 — Symbolic execution
+9. KLEE 2008 — Practical symbolic execution
+10. AI² 2018 — Abstract interpretation for neural networks
+11. Auto-LiRPA 2020 — LiRPA
+12. GPTScan 2024 또는 IRIS 2025 — LLM + program analysis
+13. AgentDojo 2024 — Agent security
+14. LLMxCPG 2025 — CPG + LLM vulnerability analysis
+
+전통적인 연구 주제
+ : Parsing → Semantics → Static Analysis → Symbolic Execution → Neural Analysis
+
+최신 연구 주제
+ : CPG → LLM-assisted Analysis → Agent Security
+  (최신 LLM 논문에서 AST/CFG/data-flow/taint/IFC가 왜 다시 필요한지를 보여주고 있습니다.)
