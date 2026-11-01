@@ -36,8 +36,8 @@
 - [정적 분석 - 자료 흐름 분석기](https://docs.google.com/presentation/d/1JewV7c8Q389PR7nuIVlpuytD66ZIyS-zcg3sdVQzAGo/edit?usp=sharing)
 
   * WHILE
-     - [부호분석 - Sign Analysis](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/dataflow/Sign.hs)
-     - [자료흐름분석 - Reaching Definition](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/dataflow/Dataflow.hs)
+     - [부호분석 - Sign Analysis](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/staticanalysis/Sign.hs)
+     - [자료흐름분석 - Reaching Definition](https://github.com/kwanghoon/Lecture_SAV/blob/master/whilelang/app/staticanalysis/Dataflow.hs)
   * 오픈소스 소프트웨어
      - [FBInfer](https://fbinfer.com)
      - [CodeQL](https://codeql.github.com/docs/)
