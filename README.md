@@ -80,6 +80,7 @@
  $ stack exec -- whilelang-exe --lex ./example/while2.while
  $ stack exec -- whilelang-exe --parse ./example/while2.while
  $ stack exec -- whilelang-exe --typecheck ./example/while2.while
+ $ stack exec -- whilelang-exe --sign ./example/sign1.while
  $ stack exec -- whilelang-exe --dataflow ./example/while2.while
  $ stack exec -- whilelang-exe --egraph ./example/while2.while
  $ stack exec -- whilelang-exe --symexec ./example/while2.while
