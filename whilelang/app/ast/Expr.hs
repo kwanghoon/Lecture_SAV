@@ -60,11 +60,7 @@ data Op =
   | OpAnd
   | OpOr
   | OpNot
-<<<<<<< HEAD
   deriving (Show, Eq, Ord, Generic)
-=======
-  deriving (Show, Eq, Generic)
->>>>>>> 037fd70 (static analysis: sign)
 
 -- instance Show Op where
 --   show OpAdd = "+"
