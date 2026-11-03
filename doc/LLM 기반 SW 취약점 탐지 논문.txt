@@ -1,0 +1,62 @@
+[LLM 기반 SW 취약점 탐지 논문]
+
+Ding et al., “Vulnerability Detection with Code Language Models,” 2025.  
+
+“Llama-based Source Code Vulnerability Detection: Prompt Engineering vs Fine Tuning.”  
+- ESORICS 2025
+- https://arxiv.org/pdf/2512.09006   
+
+“CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale.”  
+- arXiv:2506.02548
+- CyberGym의 188개 오픈소스 C/C++ 프로젝트 및 1,507개 취약점이 함께 언급됨.   
+
+“IRIS: LLM-Assisted Static Analysis for Detecting Security Vulnerabilities.”  
+- ICLR 2025
+- arXiv:2405.17238
+- https://arxiv.org/pdf/2405.17238    
+
+“LLMxCPG: Context-Aware Vulnerability Detection Through Code Property Graph-Guided Large Language Models.”  
+- USENIX Security 2025
+- https://www.usenix.org/system/files/usenixsecurity25-lekssays.pdf   
+
+“Vulnerability Detection with LLM-Aided Program Slicing.”  
+- https://noperator.dev/posts/slice/  
+
+“ATLANTIS: AI-driven Threat Localization, Analysis, and Triage Intelligence System.”  
+- arXiv:2509.14589  
+
+Yunpeng Xiong, Ting Zhang, “Sifting the Noise: A Comparative Study of LLM Agents in Vulnerability False Positive Filtering,” ISSTA 2026.  
+ : SAST false positive triage에 agent 적용
+
+“Vulnerability Evolution and the Promise of Automated Gatekeeping in Open-Source Software.”  
+- RAID 2026
+- 대화에서는 LLM 기반 SW 취약점 탐지와 CI/CD 연동 연구로 소개됨. 
+
+“Prism: A Multi-Team Orchestration of LLM Agents for Automatic Program Repair.”  
+- RAID 2026
+- AIxCC 관련 LLM 기반 자동 프로그램 수리 연구로 소개됨.  
+
+“Democratizing False Positives Filtering Through Learning Assisted Reasoning.”  
+- RAID 2026
+- 동적으로 문맥을 추출하는 에이전트를 이용한 False Positive 필터링 연구로 언급됨.
+
+“Program Graph Learning for Software Vulnerability …”  
+- Transactions on Graph Intelligence and Network Applications
+- 2026년 9월 출판된 survey 논문
+- 카카오톡에 기록된 파일명이 Program_Graph_Learning_for_Software_Vulnerability_.pdf
+
+“CPGHunter: LLM-guided Semantic Modeling for Scalable Vulnerability Detection via Taint Analysis.”  
+- Source/Sink를 찾는 연구로 소개됨. 
+
+C.-A. Brust, T. Sonnekalb, and B. Gruner, “ROMEO: A Binary Vulnerability Detection Dataset for Exploring Juliet Through the Lens of Assembly Language.”  
+- Computers & Security, Vol. 128, Article 103165, 2023.    
+
+“파생 프로젝트 취약점 탐지를 위한 다중 시드 풀 퍼저.”  
+- 세옥 & 상권
+- 한국정보보호학회 동계학술대회, 2025
+- 탐지된 취약점의 정탐 여부를 퍼징으로 확인하는 연구로 언급됨. 
+
+“Juliet 기반 LLM 취약점 경고 판정 평가에서 표면 단서의 영향 분석.”  
+- 스틸리언, CISC-W 2026 발표
+- Juliet 코드의 주석·클래스명·함수명·파일명과 같은 표면 단서가 LLM 판단에 미치는 영향을 분석한 연구
+
